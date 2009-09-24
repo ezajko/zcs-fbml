@@ -144,7 +144,10 @@ public class ZimbraPort {
         ccontext.setAuthToken(authToken.getTextTrim());
         ccontext.processContext(soapHelper.getContext(response));
         folderHolder.setRootFolder(soapHelper.getRootFolder(response));
-        tagHolder.setTags(soapHelper.getRootTags(response).elements());
+        
+        if(soapHelper.getRootTags(response) != null)
+        	tagHolder.setTags(soapHelper.getRootTags(response).elements());
+
         return response;
     }
 

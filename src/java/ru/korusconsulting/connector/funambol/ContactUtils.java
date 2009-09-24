@@ -485,7 +485,7 @@ public class ContactUtils {
         public static final String PERSONAL_PRIMIRY_PHONE_NUM = "PrimaryTelephoneNumber";
         public static final String PERSONAL_OTHER_PHONE_NUM = "OtherTelephoneNumber";
         public static final String PERSONAL_OTHER_FAX_NUMBER = "OtherFaxNumber";
-        // HomeEmail2Address - мгновенные сообщения
+        // HomeEmail2Address
 
         // OTHER
         public static final String OTHER_WEBPAGE = "WebPage";

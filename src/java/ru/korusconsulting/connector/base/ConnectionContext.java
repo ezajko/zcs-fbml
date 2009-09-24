@@ -93,12 +93,15 @@ public class ConnectionContext {
             context.add(change);
         }
         if (this.getSessionId() != null) {
-            Element sessionId = documentFactory.createElement("sessionId", context.getNamespaceURI());
+            Element sessionId = documentFactory.createElement("session", context.getNamespaceURI());
             {
                 sessionId.addAttribute("id", this.getSessionId());
             }
             context.add(sessionId);
-        }
+        } else {
+	    Element session = documentFactory.createElement("session", context.getNamespaceURI());
+	    context.add(session);
+	}
         if (FunambolConnector.getInstance() != null) {// always true
             Element userAgent = documentFactory.createElement("userAgent", context.getNamespaceURI());
             {
