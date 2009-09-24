@@ -1,3 +1,10 @@
+VERSION 0.6.00
+Rebuild for Funambol v8
+Fixed:
+   = Fixed some characters in code comments, because of wierd encoding
+   = Fixed Zimbra 6 SOAP session headers (Thanks Thomas Wouters)
+   = Fixed NULL pointer Exception in SOAP authentication (Thanks Zoltan67)
+
 VERSION 0.5.02
 Rebuild for Funambol v7.1.1
 Fixed:
