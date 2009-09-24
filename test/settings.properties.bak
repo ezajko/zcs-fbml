@@ -1,0 +1,2 @@
+zimbra-server=https\://<your server>/service/soap
+keystoke=<keystoke path to CA>

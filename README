@@ -1,0 +1,59 @@
+DESCRIPTION
+Synchronize funambol with zimbra. Connector can synchronize the follow items:
+- Contacts  (text/x-s4j-sifc and text/x-vcard)
+- Calendars (text/x-s4j-sife and text/x-vcalendar)
+- Tasks     (text/x-s4j-sift and text/calendar)
+Connector cann't synchronize (but at future may be) Notes
+
+--------------------------------------------------------------------------------------
+REQUIMENTS
+
+Funambol v6.5.12 -  think it will be work on all v6.5 ds-servers and higher
+Zimbra v5.0.x
+ 
+--------------------------------------------------------------------------------------
+BUILD
+Unzip the ZimbraConnector.zip in a folder, for example ZimbraConnector.
+Connector distribution include builded connector ZimbraConnector/ru.korusconsulting/output/ZimbraConnector.s4j
+If you want build connector from source then you should move to ZimbraConnector/ru.korusconsulting and exec ant
+$:cd ZimbraConnector/ru.korusconsulting
+$:ant
+
+--------------------------------------------------------------------------------------
+TEST
+If you want run tests then you must use user.properties file and settings.properties in the test folder of project.
+
+user.properties have to contain username and password properties, example:
+username= MyName
+password= MyName
+
+settings.properties have to contain zimbra-server and may contain keystoke properties;
+zimbra-server - point to zimbra soap service URL
+keystoke - point to CA certs for zimbra server (required if you use SSL)
+
+
+--------------------------------------------------------------------------------------
+INSTALLATION:
+No any special action required - Use funambol manual for install connector
+
+If you use ssl, then make sure that you set keystoke path:
+set JAVA_OPTS=%JAVA_OPTS% -Djavax.net.ssl.trustStore="%~dp0..\lib\security\cacerts"
+
+--------------------------------------------------------------------------------------
+SOME NOTES:
+
+Connector don't synchronize the followed contact information:
+assistantPhone
+callbackPhone
+otherCity
+otherCountry
+otherPostalCode
+otherState
+otherStreet
+otherURL
+customerId 
+It's happen because cann't find corresponding field form VCard.
+Also :
+primiryTelephone - cann't find where I can store him in the Zimbra
+
+Connector cann't move recurring event.

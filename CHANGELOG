@@ -1,0 +1,17 @@
+VERSION 0.5.02
+Rebuild for Funambol v7.1.1
+Fixed:
+   = Until date in a recuring tasks contain's invalid character (FIXED)
+   
+
+VERSION 0.5.01
+Rebuild for Funambol v7
+
+VERSION 0.5
+Changed:
+Fixed:
+   = Contact note bug (Thanks Francesco Di Cerbo)
+   = Output message about invalid credentials
+   = Allow more than 1000 calendars syncs.
+
+I think that I must start chagelog from 0.5 version;

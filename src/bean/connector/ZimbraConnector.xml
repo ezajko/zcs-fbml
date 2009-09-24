@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.5.0" class="java.beans.XMLDecoder">
+
+<object class="ru.korusconsulting.connector.config.ConnectorConfig">
+    
+  <void property="dataSource">
+    <string>jdbc/fnblds</string>
+  </void>
+
+</object>
+</java>

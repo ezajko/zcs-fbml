@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.4.0" class="java.beans.XMLDecoder">
+ <object class="ru.korusconsulting.connector.funambol.ZimbraOfficer">
+  <void property="zimbraUrl">
+   <string>http://169.253.0.2/service/soap/</string>
+  </void>
+  <void property="autoRegisterPrincipal">
+   <boolean>true</boolean>
+  </void>
+ </object>
+</java>

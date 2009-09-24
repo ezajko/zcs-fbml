@@ -1,0 +1,224 @@
+<?html version="1.0" enconding="UTF-8"?>
+
+<!-- $Id: FunambolV6ModuleDevelopmentTutorial.txt,v 1.38 2007/07/20 10:22:31 tomcat Exp $
+=======================================================
+Build file for DummySyncSource.
+=======================================================
+-->
+
+<project name="Funambol Zimbra Connector" default="pack" basedir=".">
+
+    <!-- Pick up the environment variables -->
+    <property environment="ENV"/>
+    <property file="build.properties"/>
+	
+
+    <!-- =============================================== -->
+    <!-- Definitions                                     -->
+    <!-- =============================================== -->
+    <property name="dir.lib"             value="lib"               />
+    <property name="dir.src"             value="src"               />
+    <property name="dir.src.sql"         value="src/sql"           />
+    <property name="dir.src.java"        value="src/java"          />
+    <property name="dir.src.bean"        value="src/bean"          />
+    <property name="dir.src.manifest"    value="src/manifest"      />
+    <property name="dir.src.properties"  value="src/properties"    />
+    <property name="dir.src.xml"         value="src/xml"           />
+    <property name="dir.output"          value="output"            />
+    <property name="dir.output.javadoc"  value="output/javadoc"    />
+    <property name="dir.output.classes"  value="output/classes"    />
+	<property name="dir.target"          value="target"            />
+    <property name="file.jar.config"     value="config.jar"        />
+    <property name="module.name"         value="ZimbraConnector"/>
+	<property name="pk.prefix"           value="ru.korusconsulting"/>
+
+	<property file="${dir.src.java}/zimbraconnector.properties"/>
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+        <target name="usage" depends="init">
+
+        <echo message=""/>
+        <echo message="${project-name-text} build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage       --> help on usage"/>
+        <echo message=" build       --> builds the project"/>
+        <echo message=" pack        --> generates binary files"/>
+        <echo message=" clean       --> cleans up the build directory"/>
+        <echo message=" env         --> Displays the current environment"/>
+        <echo message=""/>
+
+    </target>
+
+    <!-- =============================================== -->
+    <!-- ENV                                             -->
+    <!-- =============================================== -->
+
+    <target name="env">
+         <echoproperties/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+
+    <!-- =============================================== -->
+    <!-- INIT                                            -->
+    <!-- =============================================== -->
+    <target name="init">
+
+        <!-- Directory set up -->
+
+        <mkdir dir="${dir.output.classes}"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="init">
+        <javac debug             = "on"
+               deprecation       = "true"
+               srcdir            = "${dir.src.java}"
+               destdir           = "${dir.output.classes}"
+               includeAntRuntime = "no"
+               source            = "1.5"
+               includes          = "**/*java">
+            <classpath>
+                <fileset dir="lib">
+                  <include name="**/*.jar"/>
+                </fileset>
+            	<fileset dir="dslibs">
+	              <include name="**/*.jar"/>
+            	</fileset>
+            </classpath>
+        </javac>
+        <copy todir = "${dir.output.classes}" preservelastmodified="true">
+            <fileset dir="${dir.src.java}/">
+            	<include name="**/*.properties" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- PACK                                            -->
+    <!-- =============================================== -->
+	<target name="pack" depends="build">
+    <!--target name="pack"-->
+        <property name="dir.module" value="${dir.output}/${module.name}"/>
+
+        <!--
+            Create the package directory structure
+        -->
+        <mkdir dir="${dir.module}/config"/>
+        <mkdir dir="${dir.module}/sql"/>
+        <mkdir dir="${dir.module}/lib"/>
+        <!-- -->
+
+        <copy todir = "${dir.module}/sql" preservelastmodified="true">
+            <fileset dir="${dir.src.sql}/"/>
+        </copy>
+
+    	<copy todir = "${dir.module}/lib" preservelastmodified="true">
+    	    <fileset dir="${dir.lib}/"/>
+    	</copy>
+    	
+    	
+        <!--
+            The classes jar
+        -->
+        <jar jarfile  = "${dir.module}/lib/${module.name}.jar"
+             compress = "true"
+             update   = "true"
+        >
+            <fileset dir="${dir.output.classes}">
+                <include name="**/*.class" />
+            	<include name="**/*.properties" />
+            </fileset>
+        </jar>
+    	
+        <!--
+            The module jar
+        -->
+        <jar jarfile  = "${dir.output}/${module.name}.s4j"
+             compress = "true"
+             update   = "true"
+        >
+            <fileset dir="${dir.module}">
+                <include name="**/*" />
+            </fileset>
+        </jar>
+
+        <antcall target="clean-module">
+          <param name="dir.module" value="${dir.module}"/>
+        </antcall>
+        
+    </target>
+
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean">
+        <delete dir = "${dir.output}"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- CLEAN-MODULE                                    -->
+    <!-- =============================================== -->
+    <target name="clean-module" unless="debug">
+        <echo message="Cleaning ${dir.module}"/>
+        <delete dir = "${dir.module}"/>
+    </target>
+	
+	<!-- =============================================== -->
+    <!-- DEPLOY MODULE                                   -->
+    <!-- =============================================== -->
+    <target name="deploy-module" unless="debug">
+        <echo message="Deploy Module ${dir.output}/${module.name}.s4j"/>
+    	<copy todir = "${ds-server}/modules" preservelastmodified="true" file="${dir.output}/${module.name}.s4j"></copy>
+    	<!--exec dir="${ds-server}" executable="cmd">
+    		<arg value="/c"/>
+    		<arg value="bin\install-modules.bat"/>
+    	</exec-->
+    </target>
+	<!-- =============================================== -->
+    <!-- FILE RELEASE                                    -->
+    <!-- =============================================== -->
+	<target name="source" depends="pack">
+		<mkdir dir="${dir.target}"/>
+        <delete file="${dir.target}/${module.name}_${connector.version}.zip"/>
+        <zip zipfile="${dir.target}/${module.name}_${connector.version}.zip">
+            <zipfileset dir="${basedir}"
+                defaultexcludes="no"
+                includes="**/*"
+	            excludes="${dir.output}/*.s4j, ${dir.target}/**,changeslog.txt,**/cvshistory.txt, ${dir.output.classes}/**, test/user.properties, test/settings.properties, sync.log, **/.svn/**"
+                prefix="${pk.prefix}"/>
+        </zip>
+		<copy tofile = "${dir.output}/${module.name}_${connector.version}.s4j" 
+			file="${dir.output}/${module.name}.s4j"/>
+	</target>
+	<target name="ftp_upload" unless="debug" depends="source">
+		<echo message="Upload to ftp"/>
+		<!-- Zip up source files -->
+		<ftp server="upload.sourceforge.net"
+		       remotedir="incoming"
+			   passive="true"
+			   binary="true"
+		       userid="anonymous"
+			   verbose="true"
+		       password="wolfroma@users.sourceforge.net">
+			<fileset dir="${dir.output}" casesensitive="yes">
+			  <include name="${module.name}_${connector.version}.s4j"/>
+			  <include name="${module.name}_${connector.version}.zip"/>
+			</fileset>
+			<fileset dir="${dir.target}" casesensitive="yes">
+				  <include name="${module.name}_${connector.version}.zip"/>
+			</fileset>
+		  </ftp>
+    </target>
+</project>

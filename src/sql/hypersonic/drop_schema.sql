@@ -1,0 +1,1 @@
+drop table zimbra_chng_token if exists;

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+        <soap:Header>
+            <context xmlns="urn:zimbra">
+                <authToken>0_c19d0a039d58a0cc8326fdb4a7dbc9457856669a_69643d33363a30376434623964622d373362392d343230392d396431612d6434393437373531613364343b6578703d31333a313233383431373138383730393b747970653d363a7a696d6272613b</authToken>
+                <change token='66'/>
+                <sessionId id='110'/>
+                <userAgent name='ZimbraFunambol Connector'
+                           version='0.5.02'/>
+            </context>
+        </soap:Header>
+        <soap:Body>
+            <BatchRequest xmlns="urn:zimbra">
+                <CreateTaskRequest xmlns="urn:zimbraMail">
+                    <m l='15'>
+                        <su>Task</su>
+                        <inv>
+                            <comp allDay='true'
+                                  name='Task'
+                                  class='PUB'
+                                  priority='5'
+                                  percentComplete='0'
+                                  status='NEED'>
+                                <dueDate d='20080224'/>
+                                <xprop name='reminder'>
+                                    <xparam name='active'
+                                            value='false'/>
+                                    <xparam name='minutes'
+                                            value='0'/>
+                                    <xparam name='time'
+                                            value=''/>
+                                    <xparam name='soundFile'
+                                            value=''/>
+                                    <xparam name='options'
+                                            value='0'/>
+                                    <xparam name='interval'
+                                            value='0'/>
+                                    <xparam name='repeatCount'
+                                            value='0'/>
+                                </xprop>
+                                <recur>
+                                    <add>
+                                        <rule freq='WEE'>
+                                            <interval ival='1'/>
+                                            <until d='2008-04-13'/>
+                                            <byday>
+                                                <wkday day='SU'/>
+                                                <wkday day='MO'/>
+                                                <wkday day='TU'/>
+                                            </byday>
+                                        </rule>
+                                        <dates tz=''>
+                                            <dtval>
+                                                <s d='20080220'/>
+                                            </dtval>
+                                        </dates>
+                                    </add>
+                                </recur>
+                            </comp>
+                        </inv>
+                        <mp ct='multipart/alternative'>
+                            <mp ct='text/plain'>
+                                <content>sssssss</content>
+                            </mp>
+                        </mp>
+                    </m>
+                </CreateTaskRequest>
+            </BatchRequest>
+        </soap:Body>
+    </soap:Envelope>
