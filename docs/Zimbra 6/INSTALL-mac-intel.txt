@@ -1,0 +1,206 @@
+== Install Instructions for Intel Mac OS X ==
+
+The following instructions detail how to get a development
+environment setup for Zimbra on an Intel Mac running OS X 10.4. In
+each section below, links to the necessary software is provided.
+However, if inside Zimbra many of these packages are already 
+downloaded and are available at http://kenny/public/software/ 
+so try there first. 
+
+Some notes on the software:
+
+   * Perforce - install the latest version
+   * MySQL - you MUST install the x86 version, version 5 (or higher)
+
+
+=== Perforce ===
+
+Download and install client from http://perforce.com/perforce/downloads/macosx104x86.html
+
+Setup p4 client with following information:
+
+P4USER = {user_name}
+P4PORT = depot:1666
+P4CLIENT = {client_name}
+
+P4 View:
+		
+	For the basic server only include:
+		//depot/main/ZimbraCommon/... //{client_name}/ZimbraCommon/...
+		//depot/main/ZimbraIM/... //{client_name}/ZimbraIM/...
+		//depot/main/ZimbraServer/... //{client_name}/ZimbraServer/...
+		//depot/main/ThirdParty/jetty/... //{client_name}/ThirdParty/jetty/...
+
+	For the webclient also include
+		//depot/main/Ajax/... //{client_name}/Ajax/...
+		//depot/main/ZimbraWebClient/... //{client_name}/ZimbraWebClient/...
+		//depot/main/ZimbraTagLib/... //{client_name}/ZimbraTagLib/...
+		//depot/main/Zimlet/... //{client_name}/Zimlet/...
+
+	If you are using IDEA Intellij include
+		//depot/main/Zimbra.ipr //{client_name}/Zimbra.ipr
+
+After you setup Perforce, login and sync the client. This will get
+you all of the files that you will need for the rest of the install.
+
+
+=== Setup build environment ===
+
+Open a terminal shell and run the following commands:
+
+<pre>
+# set SRCDIR to P4 sync directory
+export SRCDIR=~/p4/main
+mkdir -p /opt/zimbra
+</pre>
+
+
+=== Install MySQL ===
+
+Download and install from http://dev.mysql.com/downloads/mysql/5.0.html#macosx-dmg
+
+Note: Install *both* packages so that MySQL starts automatically on reboot
+
+Run the following commands:
+
+<pre>
+sudo ln -s /usr/local/mysql /opt/zimbra/mysql
+</pre>
+
+Then create /opt/zimbra/mysql/data/my.cnf with:
+
+<pre>
+[mysqld]
+bind-address = localhost
+port = 7306
+</pre>
+
+Start MySQL with the following command:
+[Note: mysqld will start automatically on reboot]
+
+<pre>
+sudo -b /opt/zimbra/mysql/bin/mysqld_safe --user=mysql
+</pre>
+
+Set the password to the ant expected "zimbra".
+
+<pre>
+% /opt/zimbra/mysql/bin/mysqladmin -u root password zimbra
+</pre>
+
+
+=== Install OpenLDAP ===
+
+OpenLDAP is now installed automatically during reset-all.
+The only manual change you need to make is to run "sudo
+visudo" and add the following at the end of the file and
+save:
+
+<pre>
+{user_name}{TAB}ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd
+<pre>
+
+
+=== Deploy Zimbra ===
+
+Deploy Zimbra with the following commands:
+
+<pre>
+cd $SRCDIR/ZimbraServer
+ant reset-all
+</pre>
+
+You should now be able to point your browser to the following
+URL and login with the username "user1" and password "test123":
+
+<pre>
+http://localhost:7070
+</pre>
+
+
+=== Set up the JDK for command line tools ===
+
+Command-line tools like zmprov, zmmailbox, zmsoap, etc., depend
+on the JDK to be in /opt/zimbra/java.  Either download the JDK
+and extract there, or create a symbolic link to your existing
+JDK location.
+
+
+=== Install Mail Transfer Agent ===
+
+In order to send mail to/from users in the Zimbra product
+you will need a mail transfer agent. However, you do not need
+a full MTA such as Postfix in order for this to work. Instead,
+you can install a Perl script that acts as a simple MTA.
+
+NOTE: In order to continue with this step, you need to have
+installed the Mac OS X development tools. If you haven't done
+this yet, insert disc 1 and install Xcode Tools/XcodeTools.mpkg
+
+First, you need to install some Perl packages by running
+the following commands: [The first time you run CPAN, you
+will need to configure it -- use default settings where
+possible]
+
+<pre>
+sudo -H -s
+cpan
+</pre>
+
+At the CPAN prompt, type the following commands:
+
+<pre>
+install Net::SMTP::Server
+install Net::LMTP
+install Net::DNS
+quit
+</pre>
+
+If you're use Mac OS 10.5 or later, run "sudo visudo"
+and add the following line to the Defaults section:
+
+<pre>
+Defaults        env_keep += "ZIMBRA_HOSTNAME"
+</pre>
+
+to allow ZIMBRA_HOSTNAME to be exported into a sudo
+environment.  Now you can run the Perl MTA with the following
+commands:
+
+<pre>
+export ZIMBRA_HOSTNAME=`/opt/zimbra/bin/zmhostname`
+sudo -b perl $SRCDIR/ZimbraServer/src/perl/zMTAHack.pl
+</pre>
+
+NOTE: When sending mail, you need to fully qualify the
+address as {username}@$ZIMBRA_HOSTNAME. The {username} is
+"user1" through "user5".
+
+
+=== Starting / Stopping Servers ===
+
+To start or stop all servers including LDAP:
+
+<pre>
+cd $SRCDIR/ZimbraServer
+ant [start-servers | stop-servers]
+TODO
+</pre>
+
+
+To start or stop LDAP:
+
+<pre>
+cd $SRCDIR/ZimbraServer
+ant [start-ldap | stop-ldap]
+TODO
+</pre>
+
+
+To start or ZCS web servers:
+
+<pre>
+cd $SRCDIR/ZimbraServer
+ant [start-webserver | stop-webserver]
+TODO
+</pre>
