@@ -690,7 +690,7 @@ public class CalendarUtils {
                     cc.setBusyStatus(getShort(busyStatus_, comp.attributeValue(A_FREEBUSY)));
                     cc.setBusyStatus(getShort(busyStatus_, comp.attributeValue(A_FREEBUSYA)));
                     String allDay = comp.attributeValue(A_ALLDAY);
-                    cc.setAllDay("1".equals(allDay) || "true".equalsIgnoreCase(allDay));
+                    cc.setAllDay(Boolean.valueOf("1".equals(allDay) || "true".equalsIgnoreCase(allDay)));
                     cc.setSummary(getProperty(comp.attributeValue(A_NAME)));
                     cc.setLocation(getProperty(comp.attributeValue(A_LOCATION)));
                     Short accessClass = getShort(accessClasses_, comp.attributeValue(A_CLASS));
