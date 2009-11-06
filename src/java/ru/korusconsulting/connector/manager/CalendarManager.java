@@ -189,6 +189,8 @@ public class CalendarManager extends Manager<Calendar> {
 
     public SyncItemKey[] getTwins(Calendar calendar) {
         ArrayList<String> twins = new ArrayList<String>();
+
+	FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
         try {
             CalendarContent cc = calendar.getCalendarContent();
             String subject = getValue(cc.getSummary());
@@ -248,8 +250,8 @@ public class CalendarManager extends Manager<Calendar> {
                 		+ " allDay: " + Boolean.toString(cc.isAllDay())
                 		+ " isTask: " + Boolean.toString(cc instanceof Task)
                 		+ " subject: " + subject
-                		+ " startDate: " + (string) dtStart
-                		+ " endDate: " + (string) dtEnd
+                		+ " startDate: " + dtStart.toString()
+                		+ " endDate: " + dtEnd.toString()
                 		);
             }
             boolean isAllDay = cc.isAllDay();
@@ -301,8 +303,8 @@ public class CalendarManager extends Manager<Calendar> {
                     		+ " allDay: " + Boolean.toString(hash.allDay)
                     		+ " isTask: " + Boolean.toString(cc instanceof Task)
                     		+ " subject: " + hash.subject
-                    		+ " startDate: " + (string) hash.startDate
-                    		+ " endDate: " + (string) hash.endDate
+                    		+ " startDate: " + hash.startDate.toString()
+                    		+ " endDate: " + hash.endDate.toString()
                     		+ " = twin: " + Boolean.toString(twin)
                     		);
                 }
