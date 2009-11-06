@@ -242,6 +242,16 @@ public class CalendarManager extends Manager<Calendar> {
                 calendarHash = new CalendarHash[calendars.size()];
                 fullCalendarRequest = true;
             }
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Start twin matching on: \nSOURCE:" 
+                		+ " allDay: " + Boolean.toString(cc.isAllDay())
+                		+ " isTask: " + Boolean.toString(cc instanceof Task)
+                		+ " subject: " + subject
+                		+ " startDate: " + (string) dtStart
+                		+ " endDate: " + (string) dtEnd
+                		);
+            }
             boolean isAllDay = cc.isAllDay();
             for (int i = 0; i < calendars.size(); i++) {
                 boolean twin = true;
@@ -284,6 +294,17 @@ public class CalendarManager extends Manager<Calendar> {
                             twin &= dtEnd.getTimeInMillis() == hash.endDate.getTime();
                         }
                     }
+                }
+                
+                if (log.isDebugEnabled()) {
+                    log.debug("Start twin matching on: \nTARGET:" 
+                    		+ " allDay: " + Boolean.toString(hash.allDay)
+                    		+ " isTask: " + Boolean.toString(cc instanceof Task)
+                    		+ " subject: " + hash.subject
+                    		+ " startDate: " + (string) hash.startDate
+                    		+ " endDate: " + (string) hash.endDate
+                    		+ " = twin: " + Boolean.toString(twin)
+                    		);
                 }
 
                 if (twin) {
