@@ -1129,7 +1129,7 @@ public class CalendarUtils {
     }
 
     /**
-     * Recomendation - don't use version field if you don't known exactly know
+     * Recommendation - don't use version field if you don't known exactly know
      * that you do
      * 
      * @param type
@@ -1170,7 +1170,7 @@ public class CalendarUtils {
     }
 
     /**
-     * Recomendation - don't use version field if you don't known exactly know
+     * Recommendation - don't use version field if you don't known exactly know
      * that you do
      * 
      * @param type
@@ -1182,7 +1182,8 @@ public class CalendarUtils {
      * @return
      * @throws ConverterException
      */
-    public static Calendar convertFrom(String type, String version, byte[] content,
+    
+	public static Calendar convertFrom(String type, String version, byte[] content,
             TimeZone timezone, String charset) throws ConverterException {
         Calendar calendar = null;
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)
@@ -1196,7 +1197,7 @@ public class CalendarUtils {
             }
         } else if (PhoneDependedConverter.VCAL_TYPE.equals(type)) {
             XVCalendarParser parser = new XVCalendarParser(new ByteArrayInputStream(content));
-            VCalendarConverter vconv = new VCalendarConverter(timezone, charset);
+            VCalendarConverter vconv = new VCalendarConverter(timezone, charset, false);
             try {
                 VCalendar vcalendar = (VCalendar) parser.XVCalendar();
                 vcalendar.addProperty("VERSION", version == null ? "1.0" : version);
@@ -1207,7 +1208,7 @@ public class CalendarUtils {
         } else if (PhoneDependedConverter.ICAL_TYPE.equals(type)) {
             ICalendarParser parser;
             parser = new ICalendarParser(new ByteArrayInputStream(content));
-            VCalendarConverter vconv = new VCalendarConverter(timezone, charset);
+            VCalendarConverter vconv = new VCalendarConverter(timezone, charset, false);
             try {
                 VCalendar vcalendar = parser.ICalendar();
                 vcalendar.addProperty("VERSION", version == null ? "2.0" : version);
