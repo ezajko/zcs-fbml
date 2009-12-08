@@ -299,7 +299,7 @@ public class CalendarManager extends Manager<Calendar> {
                 }
                 
                 if (log.isDebugEnabled()) {
-                    log.debug("Start twin matching on: \nTARGET:" 
+                    log.debug("\tis twin matching on: \nTARGET:" 
                     		+ " allDay: " + Boolean.toString(hash.allDay)
                     		+ " isTask: " + Boolean.toString(cc instanceof Task)
                     		+ " subject: " + hash.subject
