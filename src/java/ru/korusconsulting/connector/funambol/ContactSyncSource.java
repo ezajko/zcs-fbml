@@ -28,7 +28,11 @@ import com.funambol.framework.engine.source.SyncContext;
 import com.funambol.framework.engine.source.SyncSourceException;
 
 public class ContactSyncSource extends ZimbraSyncSource {
-    transient private boolean syncPhoto = false;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 276979247128721488L;
+	transient private boolean syncPhoto = false;
     transient private ContactManager manager = new ContactManager();
 
     public ContactSyncSource() {

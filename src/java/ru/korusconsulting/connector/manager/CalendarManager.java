@@ -190,7 +190,7 @@ public class CalendarManager extends Manager<Calendar> {
     public SyncItemKey[] getTwins(Calendar calendar) {
         ArrayList<String> twins = new ArrayList<String>();
 
-	FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
+        FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
         try {
             CalendarContent cc = calendar.getCalendarContent();
             String subject = getValue(cc.getSummary());
@@ -322,7 +322,7 @@ public class CalendarManager extends Manager<Calendar> {
     private CalendarHash getHash(Calendar servCal) {
         CalendarHash hash = new CalendarHash();
         CalendarContent servcc = servCal.getCalendarContent();
-        hash.subject = getValue(servcc.getSummary());
+        hash.subject = getValue(servcc.getSummary()).trim();
         hash.allDay = servcc.isAllDay();
 
         java.util.Calendar dtStart = null;

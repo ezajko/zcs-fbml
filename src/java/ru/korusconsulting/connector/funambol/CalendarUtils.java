@@ -793,7 +793,7 @@ public class CalendarUtils {
                 // if we has non default invite then we has recurence
                 RecurrencePattern rp = cc.getRecurrencePattern();
                 if (rp == null) {
-                    logger.error("Recurence pattern cann't be null!!!!");
+                    logger.error("Recurence pattern can't be null!!!!");
                 }
 
                 Element inv = invites.get(i);
@@ -829,7 +829,7 @@ public class CalendarUtils {
                             logger.error("Error set recurence rule exception", e);
                         }
                     } else {
-                        logger.warn("Cann't moving calendar event");
+                        logger.warn("Can't moving calendar event (status of this instance set to CANC)");
                     }
                 }
 

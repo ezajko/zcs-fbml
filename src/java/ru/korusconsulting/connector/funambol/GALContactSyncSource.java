@@ -40,7 +40,11 @@ import com.funambol.framework.engine.source.SyncContext;
 import com.funambol.framework.engine.source.SyncSourceException;
 
 public class GALContactSyncSource extends ZimbraSyncSource {
-    transient private Element contactsResponse;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4968207393177111986L;
+	transient private Element contactsResponse;
     
     public GALContactSyncSource() {
     }

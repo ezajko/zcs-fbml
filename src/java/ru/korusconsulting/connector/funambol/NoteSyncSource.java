@@ -48,7 +48,11 @@ import com.funambol.framework.engine.source.SyncContext;
 import com.funambol.framework.engine.source.SyncSourceException;
 
 public class NoteSyncSource extends ZimbraSyncSource {
-    transient private NoteManager manager = new NoteManager();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1671640444657691261L;
+	transient private NoteManager manager = new NoteManager();
 
     public NoteSyncSource() {
     }

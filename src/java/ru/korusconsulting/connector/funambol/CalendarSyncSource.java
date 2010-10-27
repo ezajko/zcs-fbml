@@ -31,7 +31,11 @@ import com.funambol.framework.engine.source.SyncContext;
 import com.funambol.framework.engine.source.SyncSourceException;
 
 public class CalendarSyncSource extends ZimbraSyncSource {
-    transient private CalendarManager manager = new CalendarManager();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4317848139346995376L;
+	transient private CalendarManager manager = new CalendarManager();
     transient boolean task = false;
     transient private UserTokenDao userTokenDao;
     transient private ArrayList<String> servedItems;
@@ -190,7 +194,7 @@ public class CalendarSyncSource extends ZimbraSyncSource {
                     logger.debug("The twin's is zimbra calendar with id='"
                             + item.getKey().getKeyAsString() + "'=" + toString(twins));
                 else
-                    logger.debug("Cann't find any twins for '" + item.getKey().getKeyAsString()
+                    logger.debug("Can't find any twins for '" + item.getKey().getKeyAsString()
                             + "'");
             }
             return twins;
@@ -221,7 +225,6 @@ public class CalendarSyncSource extends ZimbraSyncSource {
                                            null,
                                            item.getType(),
                                            null);
-
         } catch (Throwable e) {
             if (logger.isInfoEnabled()) {
                 logger.error("Error occur then add synitem: " + new String(item.getContent()));

@@ -243,6 +243,22 @@ public class PhoneDependedConverter {
                                                         calendar,
                                                         source.getTimeZone(),
                                                         source.getCharset()));
+            } else {
+            	if (event) { // EVENT_item = X_S4J_SIFE as default
+                    item.setType(SIFE_TYPE);
+                    item.setContent(CalendarUtils.convertTo(SIFE_TYPE,
+                                                            null,
+                                                            calendar,
+                                                            source.getTimeZone(),
+                                                            source.getCharset()));
+                } else { // TODO_item = X_S4J_SIFT as default
+                    item.setType(SIFT_TYPE);
+                    item.setContent(CalendarUtils.convertTo(SIFT_TYPE,
+                                                            null,
+                                                            calendar,
+                                                            source.getTimeZone(),
+                                                            source.getCharset()));
+                }
             }
         } catch (ConverterException e) {
             throw new ConversionException(e);
