@@ -12,7 +12,11 @@ fi
 
 command()
 {
+        /opt/Funambol/bin/hypersonic $1 >> /var/log/funambol.log 2>&1
         /opt/Funambol/bin/funambol-server $1 >> /var/log/funambol.log 2>&1
+        /opt/Funambol/bin/ctp-server $1 >> /var/log/funambol.log 2>&1
+        /opt/Funambol/bin/inbox-listener $1 >> /var/log/funambol.log 2>&1
+        /opt/Funambol/bin/pim-listener $1 >> /var/log/funambol.log 2>&1
 }
 
 case "$1" in
