@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# Init file for Funambol DS-server
+#
+# chkconfig: 345 99 01
+# description: Funambol DS-server
+#
+
+if [ -d "/opt/zimbra/java" ]; then
+	JAVA_HOME="/opt/zimbra/java"
+fi
+
+command()
+{
+        /opt/Funambol/bin/funambol-server $1 >> /var/log/funambol.log 2>&1
+}
+
+case "$1" in
+        restart)
+                command stop
+                command start
+                RETVAL=$?
+    if [ -d /var/lock/subsys -a $RETVAL -eq 0 ]; then
+      touch /var/lock/subsys/funambol
+    fi
+                ;;
+        start)
+                command start
+                RETVAL=$?
+    if [ -d /var/lock/subsys -a $RETVAL -eq 0 ]; then
+      touch /var/lock/subsys/funambol
+    fi
+                ;;
+        stop)
+                command stop
+                RETVAL=$?
+    if [ -d /var/lock/subsys -a $RETVAL -eq 0 ]; then
+      rm -f /var/lock/subsys/funambol
+    fi
+                ;;
+        reload|status)
+                command $1
+                RETVAL=$?
+                ;;
+        *)
+                echo $"Usage: $0 {start|stop|restart|reload|status}"
+                RETVAL=1
+esac
+exit $RETVAL
