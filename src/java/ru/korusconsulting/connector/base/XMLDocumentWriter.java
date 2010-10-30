@@ -24,7 +24,7 @@ import com.funambol.framework.logging.FunambolLogger;
 import com.funambol.framework.logging.FunambolLoggerFactory;
 
 public class XMLDocumentWriter {
-	static FunambolLogger logger;
+	protected FunambolLogger logger;
 
 	/** Initialize logger */
 	public XMLDocumentWriter() {

@@ -54,6 +54,6 @@ otherURL
 customerId 
 It's happen because cann't find corresponding field form VCard.
 Also :
-primiryTelephone - cann't find where I can store him in the Zimbra
+primaryTelephone - cann't find where I can store him in the Zimbra
 
 Connector cann't move recurring event.

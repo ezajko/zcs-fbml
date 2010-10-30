@@ -42,7 +42,7 @@ public abstract class Manager<T> {
     protected boolean prepared = false;
 
     public Manager() {
-        logger = FunambolLoggerFactory.getLogger("funambol.zimbra");
+        logger = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
     }
 
     public abstract T getItem(String key, Object... args) throws IOException, SoapRequestException;
@@ -113,7 +113,7 @@ public abstract class Manager<T> {
     public boolean isExist(String key) {
         return allItems.indexOf(key) != -1;
     }
-
+    
     
 
     protected static SyncItemKey[] listAsKeyArray(ArrayList<String> list) {
@@ -148,11 +148,10 @@ public abstract class Manager<T> {
     }
 
     public static String getValue(Property prop) {
-        if (prop == null)
+        if (prop == null || Property.isEmptyProperty(prop))
             return null;
         else{
-            String v=prop.getPropertyValueAsString();
-            return v==null?null:v.equals("")?null:v;
+            return prop.getPropertyValueAsString();
         }
     }
 }

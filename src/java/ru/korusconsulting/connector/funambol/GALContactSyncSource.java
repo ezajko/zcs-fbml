@@ -94,7 +94,6 @@ public class GALContactSyncSource extends ZimbraSyncSource {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public SyncItemKey[] getDeletedSyncItemKeys(Timestamp since, Timestamp until) throws SyncSourceException {
         logger.debug("In getDeletedSyncItemKeys()...");
         return new SyncItemKey[0];

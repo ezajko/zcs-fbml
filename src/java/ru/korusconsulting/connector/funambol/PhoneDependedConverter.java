@@ -45,7 +45,7 @@ public class PhoneDependedConverter {
 
     private static PhoneDependedConverter instance;
 
-    static private FunambolLogger logger;
+    private FunambolLogger logger;
 
     public PhoneDependedConverter() {
         logger = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.PhoneDependedConverter");

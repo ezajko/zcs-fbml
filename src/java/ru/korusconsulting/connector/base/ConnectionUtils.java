@@ -22,6 +22,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.funambol.framework.logging.FunambolLogger;
+import com.funambol.framework.logging.FunambolLoggerFactory;
+
 public class ConnectionUtils {
     public static void writeToStream(byte[] data, OutputStream urlOutputStream)
             throws IOException {
@@ -72,6 +75,8 @@ public class ConnectionUtils {
                     out.close();
                 }
             } catch (IOException ioe) {
+            	FunambolLogger logger = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
+            	logger.error("Downloading from Zimbra went wrong", ioe);
             }
         }
     }

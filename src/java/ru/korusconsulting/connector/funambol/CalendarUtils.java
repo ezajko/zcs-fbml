@@ -1490,7 +1490,7 @@ public class CalendarUtils {
                     return calendar;
                 }
                 long time = calendar.getTimeInMillis();
-                time -= tzo * 60 * 1000L;
+                time -= 1000L * 60 * tzo;
                 TimeZone UTC = new SimpleTimeZone(0, "UTC");
                 calendar.setTimeZone(UTC);
                 calendar.setTimeInMillis(time);

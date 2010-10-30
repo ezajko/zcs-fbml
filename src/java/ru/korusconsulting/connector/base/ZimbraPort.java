@@ -1254,9 +1254,9 @@ public class ZimbraPort {
             Element note = NoteUtils.asElement(n, documentFactory, ZConst.URN_ZIMBRA_MAIL, false);
             if (note.hasContent()) {
                 contactsRequest.add(note);
-                if (folderId != null) {
-                    note.addAttribute(ZConst.A_FOLDER, folderId);
-                }
+                //if (folderId != null) {
+                note.addAttribute(ZConst.A_FOLDER, folderId);
+                //}
             }
         }
         Document response = sendRequest(request);

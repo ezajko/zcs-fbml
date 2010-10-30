@@ -50,6 +50,7 @@ Build file for DummySyncSource.
         <echo message=" usage       --> help on usage"/>
         <echo message=" build       --> builds the project"/>
         <echo message=" pack        --> generates binary files"/>
+        <echo message=" source      --> generates release files (needed to build real packages)"/>
         <echo message=" clean       --> cleans up the build directory"/>
         <echo message=" env         --> Displays the current environment"/>
         <echo message=""/>

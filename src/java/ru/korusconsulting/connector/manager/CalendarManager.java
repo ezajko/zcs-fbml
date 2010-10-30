@@ -33,8 +33,6 @@ import com.funambol.common.pim.calendar.Task;
 import com.funambol.common.pim.common.ConversionException;
 import com.funambol.framework.engine.SyncItemKey;
 import com.funambol.framework.engine.source.SyncSourceException;
-import com.funambol.framework.logging.FunambolLogger;
-import com.funambol.framework.logging.FunambolLoggerFactory;
 import com.funambol.framework.tools.merge.MergeResult;
 
 public class CalendarManager extends Manager<Calendar> {
@@ -77,11 +75,11 @@ public class CalendarManager extends Manager<Calendar> {
         if (prepared)
             return;
         prepared = true;
-        FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
-        if (log.isDebugEnabled()) {
-            log.debug("CalendarManager::determineItemsState");
-            log.debug("syncResponse:" + syncResponse.asXML());
-            log.debug("servedItems:" + servedItems);
+        
+        if (this.logger.isDebugEnabled()) {
+        	this.logger.debug("CalendarManager::determineItemsState");
+        	this.logger.debug("syncResponse:" + syncResponse.asXML());
+        	this.logger.debug("servedItems:" + servedItems);
         }
         Element deletedEl = syncResponse.element(ZConst.E_DELETED);
         String[] saved = servedItems.toArray(new String[0]);
@@ -94,8 +92,8 @@ public class CalendarManager extends Manager<Calendar> {
             Element cn = (Element) iterator.next();
             String id = extractKeyFromElement(cn);
             long modTime = Long.parseLong(cn.attributeValue("md")) * 1000;
-            if (log.isDebugEnabled()) {
-                log.debug("allItems ->:" + id);
+            if (this.logger.isDebugEnabled()) {
+            	this.logger.debug("allItems ->:" + id);
             }
             allItems.add(id);
             
@@ -107,8 +105,8 @@ public class CalendarManager extends Manager<Calendar> {
                     if (id.equals(saved[i])) {
                         // bingo, it was modification, else we wouldn't find
                         // calendar id
-                        if (log.isDebugEnabled()) {
-                            log.debug("updItems ->:" + id);
+                        if (this.logger.isDebugEnabled()) {
+                        	this.logger.debug("updItems ->:" + id);
                         }
                         updItems.add(id);
                         // erase elem, alter all all non erased element will be
@@ -119,8 +117,8 @@ public class CalendarManager extends Manager<Calendar> {
                     }
                 }
                 if (!finded) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("newItems ->:" + id);
+                    if (this.logger.isDebugEnabled()) {
+                    	this.logger.debug("newItems ->:" + id);
                     }
                     newItems.add(id);
                 }
@@ -130,8 +128,8 @@ public class CalendarManager extends Manager<Calendar> {
                     if (saved[i] == null)
                         continue;
                     if (id.equals(saved[i])) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("no change ->:" + id);
+                        if (this.logger.isDebugEnabled()) {
+                        	this.logger.debug("no change ->:" + id);
                         }
                         // erase elem, alter all all non erased element will be
                         // deleted
@@ -146,8 +144,8 @@ public class CalendarManager extends Manager<Calendar> {
                 continue;
             int index=delItems.indexOf(saved[i]);
             if(index==-1){
-                if (log.isDebugEnabled()) {
-                    log.debug("delItems ->:" + saved[i]);
+                if (this.logger.isDebugEnabled()) {
+                	this.logger.debug("delItems ->:" + saved[i]);
                 }
                 delItems.add(saved[i]);
             }
@@ -190,17 +188,19 @@ public class CalendarManager extends Manager<Calendar> {
     public SyncItemKey[] getTwins(Calendar calendar) {
         ArrayList<String> twins = new ArrayList<String>();
 
-        FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.manager");
         try {
             CalendarContent cc = calendar.getCalendarContent();
             String subject = getValue(cc.getSummary());
 
             java.util.Calendar dtStart = null;
             java.util.Calendar dtEnd = null;
+            Date startDate = null;
+            Date endDate = null;
             Date startTomorrowNoon = null;
             Date startYesterdayNoon = null;
             Date dueTomorrowNoon = null;
             Date dueYesterdayNoon = null;
+            boolean isAllDay = cc.isAllDay();
 
             String dtStartStr = getValue(cc.getDtStart());
             if (dtStartStr != null)
@@ -233,6 +233,10 @@ public class CalendarManager extends Manager<Calendar> {
                                                         // -1
                 dueYesterdayNoon = noon.getTime();
             }
+
+            startDate = dtStart == null ? null : dtStart.getTime();
+            endDate = dtEnd == null ? null : dtEnd.getTime();
+            
             if (!fullCalendarRequest) {
                 // Can be perfomance issue with request all calendars
                 // but in this case we can quick return calendar instance
@@ -245,16 +249,15 @@ public class CalendarManager extends Manager<Calendar> {
                 fullCalendarRequest = true;
             }
             
-            if (log.isDebugEnabled()) {
-                log.debug("Start twin matching on: \nSOURCE:" 
+            if (this.logger.isDebugEnabled()) {
+            	this.logger.debug("Start twin matching on: \nSOURCE:" 
                 		+ " allDay: " + Boolean.toString(cc.isAllDay())
                 		+ " isTask: " + Boolean.toString(cc instanceof Task)
                 		+ " subject: " + subject
-                		+ " startDate: " + dtStart.toString()
-                		+ " endDate: " + dtEnd.toString()
+                		+ " startDate: " + startDate.toString()
+                		+ " endDate: " + endDate.toString()
                 		);
             }
-            boolean isAllDay = cc.isAllDay();
             for (int i = 0; i < calendars.size(); i++) {
                 boolean twin = true;
                 CalendarHash hash;
@@ -266,11 +269,10 @@ public class CalendarManager extends Manager<Calendar> {
                     hash = calendarHash[i];
                 }
 
-                twin &= subject == null ? hash.subject == null
-                        : subject.equalsIgnoreCase(hash.subject);
+                twin &= subject == null ? hash.subject == null : subject.equalsIgnoreCase(hash.subject);
                 twin &= isAllDay == hash.allDay;
 
-                if (dtStart == null) {
+                if (startDate == null) {
                     twin &= hash.startDate == null;
                 } else {
                     twin &= hash.startDate != null;
@@ -279,12 +281,12 @@ public class CalendarManager extends Manager<Calendar> {
                             twin &= hash.startDate.getTime() > startYesterdayNoon.getTime()
                                     & hash.startDate.getTime() < startTomorrowNoon.getTime();
                         } else {
-                            twin &= dtStart.getTimeInMillis() == hash.startDate.getTime();
+                            twin &= startDate.getTime() == hash.startDate.getTime();
                         }
                     }
                 }
 
-                if (dtEnd == null) {
+                if (endDate == null) {
                     twin &= hash.endDate == null;
                 } else {
                     twin &= hash.endDate != null;
@@ -293,13 +295,13 @@ public class CalendarManager extends Manager<Calendar> {
                             twin &= hash.endDate.getTime() > dueYesterdayNoon.getTime()
                                     & hash.endDate.getTime() < dueTomorrowNoon.getTime();
                         } else {
-                            twin &= dtEnd.getTimeInMillis() == hash.endDate.getTime();
+                            twin &= endDate.getTime() == hash.endDate.getTime();
                         }
                     }
                 }
                 
-                if (log.isDebugEnabled()) {
-                    log.debug("\tis twin matching on: \nTARGET:" 
+                if (this.logger.isDebugEnabled()) {
+                	this.logger.debug("\tis twin matching on: \nTARGET:" 
                     		+ " allDay: " + Boolean.toString(hash.allDay)
                     		+ " isTask: " + Boolean.toString(cc instanceof Task)
                     		+ " subject: " + hash.subject
@@ -314,7 +316,7 @@ public class CalendarManager extends Manager<Calendar> {
                 }
             }
         } catch (Throwable e) {
-            logger.error("While try to find twins, error occur ", e);
+        	this.logger.error("While try to find twins, error occur ", e);
         }
         return listAsKeyArray(twins);
     }
@@ -415,8 +417,7 @@ public class CalendarManager extends Manager<Calendar> {
     }
 
     public String extractKeyFromElement(Element element) {
-        String id = element.attributeValue(A_CALENDAR_ID);
-        return id;
+        return (String) element.attributeValue(A_CALENDAR_ID);
     }
 
     public boolean isTask() {
@@ -427,7 +428,7 @@ public class CalendarManager extends Manager<Calendar> {
         this.task = task;
     }
 
-    private class CalendarHash {
+    private static class CalendarHash {
         public String subject;
         public Date startDate;
         public Date endDate;

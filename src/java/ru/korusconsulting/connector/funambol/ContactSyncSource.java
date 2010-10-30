@@ -55,7 +55,6 @@ public class ContactSyncSource extends ZimbraSyncSource {
 
     }
 
-    @SuppressWarnings("unchecked")
     public SyncItemKey[] getAllSyncItemKeys() throws SyncSourceException {
         if (logger.isDebugEnabled()) {
             logger.debug("Get All Sync Item exclude deleted");
@@ -94,7 +93,6 @@ public class ContactSyncSource extends ZimbraSyncSource {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public SyncItemKey[] getDeletedSyncItemKeys(Timestamp since, Timestamp until)
             throws SyncSourceException {
         logger.debug("In getDeletedSyncItemKeys()...");
@@ -199,7 +197,7 @@ public class ContactSyncSource extends ZimbraSyncSource {
         if (logger.isDebugEnabled()) {
             logger.debug("Try to addSyncItem '" + keyAsString + "':" + item);
         }
-        SyncItemImpl newSyncItem;
+        SyncItem newSyncItem;
         Contact contact;
         try {
             contact = PhoneDependedConverter.getInstance().getContact(item, this);
@@ -244,7 +242,7 @@ public class ContactSyncSource extends ZimbraSyncSource {
                 contact = PhoneDependedConverter.getInstance().getContact(item, this);
                 contact.setUid(keyAsString);
                 keyAsString = manager.updItem(keyAsString, contact);
-                SyncItemImpl newSyncItem = new SyncItemImpl(this, keyAsString, null,
+                SyncItem newSyncItem = new SyncItemImpl(this, keyAsString, null,
                                                             SyncItemState.UPDATED,
                                                             item.getContent(), null,
                                                             item.getType(), null);

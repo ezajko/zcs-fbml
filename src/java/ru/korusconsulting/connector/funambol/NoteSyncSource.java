@@ -34,6 +34,7 @@ package ru.korusconsulting.connector.funambol;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 import ru.korusconsulting.connector.exceptions.SoapRequestException;
 import ru.korusconsulting.connector.manager.NoteManager;
@@ -61,7 +62,6 @@ public class NoteSyncSource extends ZimbraSyncSource {
         super.beginSync(context);
     }
 
-    @SuppressWarnings("unchecked")
     public SyncItemKey[] getAllSyncItemKeys() throws SyncSourceException {
         if (logger.isDebugEnabled()) {
             logger.debug("Get All Sync Item exclude deleted");
@@ -70,7 +70,7 @@ public class NoteSyncSource extends ZimbraSyncSource {
             manager.determineItemsState(null);
             SyncItemKey[] allKeys = manager.getAllItems();
             if (logger.isDebugEnabled()) {
-                logger.debug("All existing item (exclude deleted): " + allKeys);
+                logger.debug("All existing item (exclude deleted): " + Arrays.toString(allKeys));
             }
             return allKeys;
         } catch (Throwable e) {
@@ -198,7 +198,7 @@ public class NoteSyncSource extends ZimbraSyncSource {
         if (logger.isDebugEnabled()) {
             logger.debug("Try to addSyncItem '" + keyAsString + "':" + item);
         }
-        SyncItemImpl newSyncItem;
+        SyncItem newSyncItem;
         Note note;
         try {
             note = PhoneDependedConverter.getInstance().getNote(item, this);
@@ -245,7 +245,7 @@ public class NoteSyncSource extends ZimbraSyncSource {
                 if (prop == null)
                     note.setUid(new Property(keyAsString));
                 keyAsString = manager.updItem(keyAsString, note);
-                SyncItemImpl newSyncItem = new SyncItemImpl(this, keyAsString, null,
+                SyncItem newSyncItem = new SyncItemImpl(this, keyAsString, null,
                                                             SyncItemState.UPDATED,
                                                             item.getContent(), null,
                                                             item.getType(), null);

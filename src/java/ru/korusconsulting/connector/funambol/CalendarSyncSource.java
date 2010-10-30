@@ -67,7 +67,6 @@ public class CalendarSyncSource extends ZimbraSyncSource {
         super.commonSync();
     }
 
-    @SuppressWarnings("unchecked")
     public SyncItemKey[] getAllSyncItemKeys() throws SyncSourceException {
         if (logger.isDebugEnabled()) {
             logger.debug("Get All Sync Item exclude deleted");
@@ -106,7 +105,6 @@ public class CalendarSyncSource extends ZimbraSyncSource {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public SyncItemKey[] getDeletedSyncItemKeys(Timestamp since, Timestamp until)
             throws SyncSourceException {
         logger.debug("In getDeletedSyncItemKeys()...");
@@ -266,7 +264,7 @@ public class CalendarSyncSource extends ZimbraSyncSource {
                 if (prop == null)
                     calendar.getCalendarContent().setUid(new Property(keyAsString));
                 keyAsString = manager.updItem(keyAsString, calendar);
-                SyncItemImpl newSyncItem = new SyncItemImpl(this,
+                SyncItem newSyncItem = new SyncItemImpl(this,
                                                             keyAsString,
                                                             null,
                                                             SyncItemState.UPDATED,
