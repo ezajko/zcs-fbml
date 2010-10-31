@@ -204,11 +204,11 @@ public class CalendarManager extends Manager<Calendar> {
 
             String dtStartStr = getValue(cc.getDtStart());
             if (dtStartStr != null)
-                dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, 0);
+                dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, (long) phoneTimeZone.getRawOffset());
 
             String dtEndStr = getValue(cc.getDtEnd());
             if (dtEndStr != null) {
-                dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, 0);
+                dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, (long) phoneTimeZone.getRawOffset());
                 if (cc.isAllDay()) {
                     dtEnd.set(java.util.Calendar.HOUR_OF_DAY, 23);
                     dtEnd.set(java.util.Calendar.MINUTE, 59);
@@ -339,10 +339,10 @@ public class CalendarManager extends Manager<Calendar> {
         String dtStartStr = getValue(servcc.getDtStart());
         
         if (dtStartStr != null)
-            dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, 0);
+            dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, (long) hash.timezone.getRawOffset());
         String dtEndStr = getValue(servcc.getDtEnd());
         if (dtEndStr != null) {
-            dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, 0);
+            dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, (long) hash.timezone.getRawOffset());
             if (servcc.isAllDay()) {
                 dtEnd.set(java.util.Calendar.HOUR_OF_DAY, 23);
                 dtEnd.set(java.util.Calendar.MINUTE, 59);

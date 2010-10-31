@@ -1502,6 +1502,44 @@ public class CalendarUtils {
         return calendar;
     }
 
+    public java.util.Calendar getLocalDate(String datetime, long tzo) {
+        datetime = datetime.replace("-", "");
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        try {
+            if (datetime.length() == 8) {
+                datetime = datetime + "T000000" + (tzo == 0 ? "Z" : "");
+            }
+            if (datetime.length() < 9) {
+                int year = Integer.parseInt(datetime.substring(0, 4));
+                int month = Integer.parseInt(datetime.substring(4, 6));
+                int date = Integer.parseInt(datetime.substring(6, 8));
+                calendar.set(year, month - 1, date, 0, 0, 0);
+                return calendar;
+            }
+            if (datetime.charAt(8) == 'T') {
+                int year = Integer.parseInt(datetime.substring(0, 4));
+                int month = Integer.parseInt(datetime.substring(4, 6));
+                int date = Integer.parseInt(datetime.substring(6, 8));
+                int hourOfDay = Integer.parseInt(datetime.substring(9, 11));
+                int minute = Integer.parseInt(datetime.substring(11, 13));
+                int second = Integer.parseInt(datetime.substring(13, 15));
+                calendar.set(year, month - 1, date, hourOfDay, minute, second);
+                if (datetime.length() == 16 && datetime.charAt(15) == 'Z') {
+                    return calendar;
+                }
+                long time = calendar.getTimeInMillis();
+                time -= tzo;
+                TimeZone UTC = new SimpleTimeZone(0, "UTC");
+                calendar.setTimeZone(UTC);
+                calendar.setTimeInMillis(time);
+            } else
+                throw new RuntimeException("Unexpected value: " + datetime);
+        } catch (Throwable ex) {
+            throw new RuntimeException("Unexpected value: " + datetime, ex);
+        }
+        return calendar;
+    }
+
     private String formatCallendar(java.util.Calendar calendar) {
         int year;
         int month;
