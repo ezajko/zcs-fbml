@@ -256,6 +256,8 @@ public class CalendarManager extends Manager<Calendar> {
                 		+ " subject: " + subject
                 		+ " startDate: " + startDate.toString()
                 		+ " endDate: " + endDate.toString()
+                		+ " timezone phone: " + phoneTimeZone.getDisplayName()
+                		+ " (" + Integer.toString(phoneTimeZone.getRawOffset()) + ")"
                 		);
             }
             for (int i = 0; i < calendars.size(); i++) {
@@ -307,6 +309,8 @@ public class CalendarManager extends Manager<Calendar> {
                     		+ " subject: " + hash.subject
                     		+ " startDate: " + hash.startDate.toString()
                     		+ " endDate: " + hash.endDate.toString()
+                    		+ " timezone item: " + hash.timezone.getDisplayName()
+                    		+ " (" + Integer.toString(hash.timezone.getRawOffset()) + ")"
                     		+ " = twin: " + Boolean.toString(twin)
                     		);
                 }
@@ -329,8 +333,11 @@ public class CalendarManager extends Manager<Calendar> {
 
         java.util.Calendar dtStart = null;
         java.util.Calendar dtEnd = null;
+        
+        hash.timezone = TimeZone.getTimeZone(servcc.getDtStart().getTimeZone());
 
         String dtStartStr = getValue(servcc.getDtStart());
+        
         if (dtStartStr != null)
             dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, 0);
         String dtEndStr = getValue(servcc.getDtEnd());
@@ -433,6 +440,7 @@ public class CalendarManager extends Manager<Calendar> {
         public Date startDate;
         public Date endDate;
         public boolean allDay;
+        public TimeZone timezone;
     }
 
     public long getLastToken() {
