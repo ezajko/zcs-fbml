@@ -1164,6 +1164,7 @@ public class CalendarUtils {
             content = vcal.toString().getBytes();
 
         } else {
+        	//TODO: add default type to the configuration of the syncsource
             throw new ConverterException("Unsupported type:" + type);
         }
         return content;
@@ -1217,6 +1218,7 @@ public class CalendarUtils {
                 throw new ConverterException(e);
             }
         } else {
+        	//TODO: add default type to the configuration of the syncsource
             throw new ConverterException("Unsupported type:" + type);
         }
         return calendar;

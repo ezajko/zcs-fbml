@@ -398,14 +398,14 @@ public class PhoneDependedConverter {
             // stores. We simply
             // assume our connecting client only supports the SIF standard.
             switch (syncSourceType) {
-            case CONTACT:
-                return X_S4J_SIFC;
-            case EVENT:
-                return X_S4J_SIFE;
-            case TODO:
-                return X_S4J_SIFT;
-            default:
-                return X_S4J_SIFN;
+	            case CONTACT:
+	                return X_S4J_SIFC;
+	            case EVENT:
+	                return X_S4J_SIFE;
+	            case TODO:
+	                return X_S4J_SIFT;
+	            default:
+	                return X_S4J_SIFN;
             }
         }
 

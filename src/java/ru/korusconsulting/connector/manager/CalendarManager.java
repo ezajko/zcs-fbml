@@ -309,8 +309,8 @@ public class CalendarManager extends Manager<Calendar> {
                     		+ " subject: " + hash.subject
                     		+ " startDate: " + hash.startDate.toString()
                     		+ " endDate: " + hash.endDate.toString()
-                    		+ " timezone item: " + hash.timezone.getDisplayName()
-                    		+ " (" + Integer.toString(hash.timezone.getRawOffset()) + ")"
+                    		+ " timezone item: " + ((hash.timezone == null) ? null : hash.timezone.getDisplayName())
+                    		+ " (" + ((hash.timezone == null) ? null : Integer.toString(hash.timezone.getRawOffset())) + ")"
                     		+ " = twin: " + Boolean.toString(twin)
                     		);
                 }
@@ -334,24 +334,49 @@ public class CalendarManager extends Manager<Calendar> {
         java.util.Calendar dtStart = null;
         java.util.Calendar dtEnd = null;
         
-        hash.timezone = TimeZone.getTimeZone(servcc.getDtStart().getTimeZone());
-
-        String dtStartStr = getValue(servcc.getDtStart());
+        hash.timezone = null;
+        String dtStartStr = null;
+        String dtEndStr = null;
         
-        if (dtStartStr != null)
-            dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, (long) hash.timezone.getRawOffset());
-        String dtEndStr = getValue(servcc.getDtEnd());
-        if (dtEndStr != null) {
-            dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, (long) hash.timezone.getRawOffset());
-            if (servcc.isAllDay()) {
-                dtEnd.set(java.util.Calendar.HOUR_OF_DAY, 23);
-                dtEnd.set(java.util.Calendar.MINUTE, 59);
-                dtEnd.set(java.util.Calendar.SECOND, 00);
+        try {
+        	hash.timezone = TimeZone.getTimeZone(servcc.getDtStart().getTimeZone());
+        } catch (NullPointerException e) {
+        	hash.timezone = null;
+        }
+        
+        if (hash.timezone != null) {
+        	long tzoffset = (long) hash.timezone.getRawOffset();
+
+        	dtStartStr = getValue(servcc.getDtStart());
+            if (dtStartStr != null)
+                dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, tzoffset);
+            dtEndStr = getValue(servcc.getDtEnd());
+            if (dtEndStr != null) {
+                dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, tzoffset);
+                if (servcc.isAllDay()) {
+                    dtEnd.set(java.util.Calendar.HOUR_OF_DAY, 23);
+                    dtEnd.set(java.util.Calendar.MINUTE, 59);
+                    dtEnd.set(java.util.Calendar.SECOND, 00);
+                }
+            }
+        } else {
+        	dtStartStr = getValue(servcc.getDtStart());
+            if (dtStartStr != null)
+                dtStart = CalendarUtils.getInstance().getLocalDate(dtStartStr, 0);
+            dtEndStr = getValue(servcc.getDtEnd());
+            if (dtEndStr != null) {
+                dtEnd = CalendarUtils.getInstance().getLocalDate(dtEndStr, 0);
+                if (servcc.isAllDay()) {
+                    dtEnd.set(java.util.Calendar.HOUR_OF_DAY, 23);
+                    dtEnd.set(java.util.Calendar.MINUTE, 59);
+                    dtEnd.set(java.util.Calendar.SECOND, 00);
+                }
             }
         }
 
         hash.startDate = dtStart == null ? null : dtStart.getTime();
         hash.endDate = dtEnd == null ? null : dtEnd.getTime();
+        
         return hash;
     }
 

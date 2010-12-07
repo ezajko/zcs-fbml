@@ -301,7 +301,7 @@ public class ZimbraPort {
 
     /**
      * Request all contact with identification information We have two way
-     * detect indentical Contact, first way - by Id, second way - by firstName,
+     * detect identical Contact, first way - by Id, second way - by firstName,
      * lastName and email1
      * 
      * @return Response method element
@@ -439,7 +439,7 @@ public class ZimbraPort {
                 }
                 contact.add(attr);
             } catch (Exception e) {
-                logger.error("Cann't load Photo to contact");
+                logger.error("Can't load Photo to contact");
             }
         } else if (u) {
             Element attr = documentFactory.createElement(ZConst.A_ATTRIBUTE);
@@ -507,7 +507,7 @@ public class ZimbraPort {
         body = soapHelper.getBody(response);
         Element contactsResponse = body.element(ZConst.MODIFY_CONTACT_RESPONSE);
         if (contactsResponse == null) {
-            logger.error("Error occur, cann't find correct response");
+            logger.error("Error occur, can't find correct response");
             writer.write(request);
             writer.write(response);
             throw new SoapRequestException();
@@ -1143,7 +1143,7 @@ public class ZimbraPort {
         Element callResponse = body.element(task ? ZConst.MODIFY_TASK_RESPONSE
                 : ZConst.MODIFY_APPOINTMENT_RESPONSE);
         if (callResponse == null) {
-            logger.error("Error occur, cann't find correct response");
+            logger.error("Error occur, can't find correct response");
             writer.write(request);
             writer.write(response);
             throw new SoapRequestException();
@@ -1187,7 +1187,7 @@ public class ZimbraPort {
         body = body.element(ZConst.BATCH_RESPONSE);
         Element callResponse = body.element("SyncResponse");
         if (callResponse == null) {
-            logger.error("Error occur, cann't find correct response");
+            logger.error("Error occur, can't find correct response");
             writer.write(request);
             writer.write(response);
             throw new SoapRequestException();

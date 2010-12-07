@@ -36,7 +36,7 @@ public class XMLDocumentWriter {
 	}
 	
 	public void write(String xml, String msg) {
-	    logger.debug(msg+"\n"+xml);
+	    logger.trace(msg+"\n"+xml);
     }
 	
 	public void write(Node node, String align, String msg) {

@@ -20,7 +20,10 @@
 package ru.korusconsulting.connector.funambol;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.TimeZone;
@@ -61,8 +64,18 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
     protected Timestamp lastSync;
     transient protected ConnectorConfig config;
     
+    /**
+     * Called by the engine to notify an operation status.
+     * @param operationName the name of the operation.
+     *        One between:
+     *        - Add
+     *        - Replace
+     *        - Delete
+     * @param status the status of the operation
+     * @param keys the keys of the items
+     */
     public void setOperationStatus(String operation, int statusCode, SyncItemKey[] keys) {
-        StringBuffer message = new StringBuffer("Status:'");
+        StringBuffer message = new StringBuffer("[ZimbraSyncSource.setOperationStatus] Status:'");
 
         message.append(StatusCode.getStatusDescription(statusCode))
                .append("' for a '")
@@ -72,10 +85,32 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
         for (int i = 0; i < keys.length; i++) {
             message.append(", " + keys[i].getKeyAsString());
         }
+        message.append(" (" + keys.toString() + ")");
 
+        Throwable a = new Throwable();
+        
         logger.info(message.toString());
+        
+        if (logger.isTraceEnabled()) {
+        	//Stacktrace to String, see: http://www.javapractices.com/topic/TopicAction.do?Id=78
+            Writer result = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(result);
+            a.printStackTrace(printWriter);
+            
+            logger.trace(result.toString());
+        }
     }
 
+    /**
+     * Called before any other synchronization method. To interrupt the sync
+     * process, throw a SyncSourceException.
+     *
+     * @param syncContext the context of the sync.
+     *
+     * @see SyncContext
+     *
+     * @throws SyncSourceException to interrupt the process with an error
+     */
     @Override
     public void beginSync(SyncContext syncContext) throws SyncSourceException {
         this.context = syncContext;
@@ -101,8 +136,6 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
         }
         commonSync();
         
-            
-
         super.beginSync(syncContext);
     }
 
@@ -166,7 +199,13 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
     public void setZimbraUrl(String zimbraUrl) {
         this.zimbraUrl = zimbraUrl;
     }
-
+    
+    /**
+     * Commits the changes applied during the sync session. If the underlying
+     * datastore can not commit the changes, a SyncSourceException is thrown.
+     *
+     * @throws SyncSourceException if the changes cannot be committed
+     */
     public void commitSync() throws SyncSourceException {
         logger.debug("!------------ COMMIT SYNC --------------------!");
         // if(lastSync!=null){
@@ -176,6 +215,11 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
         super.commitSync();
     }
 
+    /**
+     * Called after the modifications have been applied.
+     *
+     * @throws SyncSourceException to interrupt the process with an error
+     */
     public void endSync() throws SyncSourceException {
         logger.debug("!------------END SYNCHRONIZATION-------------!");
         if (zimbraPort != null)
@@ -196,6 +240,14 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
     public Sync4jPrincipal getPrincipal() {
         return principal;
     }
+
+	/**
+	 * Returns a timestamp aligned to UTC
+	 */
+	protected Timestamp normalizeTimestamp(Timestamp t) {
+		return new Timestamp(t.getTime()
+				- getTimeZone().getOffset(t.getTime()));
+	}
 
     public void init() throws BeanInitializationException {
         logger = FunambolLoggerFactory.getLogger("funambol.zimbra");
