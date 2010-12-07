@@ -507,6 +507,7 @@ public class ContactUtils {
                 content = PhoneDependedConverter.getInstance().vCardV3toV21(content, charset);
             }
         } else {
+        	//TODO: add default type to the configuration of the syncsource
             throw new ConverterException("Unsupported type:" + type);
         }
         return content;
@@ -535,6 +536,7 @@ public class ContactUtils {
                 throw new ConverterException(e);
             }
         } else {
+        	//TODO: add default type to the configuration of the syncsource
             throw new ConverterException("Unsupported type:" + type);
         }
         return c;
