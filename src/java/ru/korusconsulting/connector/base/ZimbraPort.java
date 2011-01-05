@@ -1262,7 +1262,7 @@ public class ZimbraPort {
             return null;
         }
         Document request = createZimbraCall(ZConst.CREATE_NOTE_REQUEST, ZConst.URN_ZIMBRA_MAIL);
-        // FIXME I cann't find that note store folder name in the phone format
+        // FIXME I can't find that note store folder name in the phone format
         // String folderName = note.getFolder();
         String folderId = null;
         // if (folderName != null) {
@@ -1323,7 +1323,7 @@ public class ZimbraPort {
 
         Element noteEl = contactsResponse.element("note");
         Note note = NoteUtils.asNote(noteEl);
-        // FIXME I cann't find that note store folder name in the phone format
+        // FIXME I can't find that note store folder name in the phone format
         // String folderId = noteEl.attributeValue(ZConst.A_FOLDER);
         // String folderName = folderHolder.getNameById(folderId,
         // FolderHolder.CONTACT);
@@ -1336,7 +1336,7 @@ public class ZimbraPort {
         if (!init()) {
             return null;
         }
-        // FIXME I cann't find that note store folder name in the phone format
+        // FIXME I can't find that note store folder name in the phone format
         // String folderName = n.getFolder();
         // String folderId = null;
         // if (folderName == null) {

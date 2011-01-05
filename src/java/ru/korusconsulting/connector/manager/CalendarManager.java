@@ -386,7 +386,7 @@ public class CalendarManager extends Manager<Calendar> {
         Element createdCalendar = zimbraPort.requestCreateCalendar(calendar);
         String key = createdCalendar.attributeValue("invId");
         if (key == null)
-            throw new SyncSourceException("Key cann't be null");
+            throw new SyncSourceException("Key can't be null");
         int idx = key.indexOf('-');
         if (idx != -1) {
             key = key.substring(0, idx);
@@ -436,7 +436,7 @@ public class CalendarManager extends Manager<Calendar> {
             }
         }
         if (invId == null) {
-            // cann't find contact with key
+            // can't find contact with key
             // we have to create Contact
             key = addItem(calendar);
         } else {

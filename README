@@ -3,7 +3,7 @@ Synchronize funambol with zimbra. Connector can synchronize the follow items:
 - Contacts  (text/x-s4j-sifc and text/x-vcard)
 - Calendars (text/x-s4j-sife and text/x-vcalendar)
 - Tasks     (text/x-s4j-sift and text/calendar)
-Connector cann't synchronize (but at future may be) Notes
+Connector can't synchronize (but at future may be) Notes
 
 --------------------------------------------------------------------------------------
 REQUIMENTS
@@ -52,8 +52,8 @@ otherState
 otherStreet
 otherURL
 customerId 
-It's happen because cann't find corresponding field form VCard.
+It's happen because can't find corresponding field form VCard.
 Also :
-primaryTelephone - cann't find where I can store him in the Zimbra
+primaryTelephone - can't find where I can store him in the Zimbra
 
-Connector cann't move recurring event.
+Connector can't move recurring event.

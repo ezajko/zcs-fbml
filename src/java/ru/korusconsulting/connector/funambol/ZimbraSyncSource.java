@@ -116,7 +116,7 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
         this.context = syncContext;
         logger.debug("!------------BEGIN SYNCHRONIZATION-------------!");
         if (getZimbraUrl() == null) {
-            throw new SyncSourceException("The Zimbra URL Cann't be null, FATAL Error occur");
+            throw new SyncSourceException("The Zimbra URL Can't be null, FATAL Error occured");
         }
         this.principal = context.getPrincipal();
         String tz = principal.getDevice().getTimeZone();
@@ -259,7 +259,7 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
             config = ConnectorConfig.getConfigInstance();
         } catch (BeanException e) {
             logger.error("", e);
-            throw new BeanInitializationException("Cann't initialize bean, because cann't get config instance");
+            throw new BeanInitializationException("Can't initialize bean, because can't get config instance");
         }
     }
 

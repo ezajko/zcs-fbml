@@ -183,7 +183,7 @@ public class NoteSyncSource extends ZimbraSyncSource {
                     logger.debug("The twin's is zimbra note with id='"
                             + item.getKey().getKeyAsString() + "'=" + toString(twins));
                 else
-                    logger.debug("Cann't find any twins for '"
+                    logger.debug("Can't find any twins for '"
                             + item.getKey().getKeyAsString() + "'");
             }
             return twins;

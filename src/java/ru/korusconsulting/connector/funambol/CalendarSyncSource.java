@@ -331,7 +331,7 @@ public class CalendarSyncSource extends ZimbraSyncSource {
             try {
                 userTokenDao.updateToken(principal.getId(), lastToken);
             } catch (Throwable e) {
-                logger.error("cann't commit token", e);
+                logger.error("can't commit token", e);
             }
         }
         super.endSync();

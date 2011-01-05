@@ -94,7 +94,7 @@ public class NoteManager extends Manager<Note> {
             }
         }
         if (oldFolderId==null) {
-            // cann't find contact with key 
+            // can't find contact with key 
             // we have to create Contact
             key = addItem(calendar);
         } else {

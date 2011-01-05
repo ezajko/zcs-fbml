@@ -123,7 +123,7 @@ public class ContactManager extends Manager<Contact> {
             }
         }
         if (oldFolderId==null) {
-            // cann't find contact with key 
+            // can't find contact with key 
             // we have to create Contact
             key = addItem(contact);
             contact.setUid(key);

@@ -191,7 +191,7 @@ public class GALContactSyncSource extends ZimbraSyncSource {
                     stringBuilder.append("zimbraMail:a[@n='company']='" + company + "'");
                 }
                 else{
-                    stringBuilder=null;//cann't find any twins
+                    stringBuilder=null;//can't find any twins
                     if (logger.isDebugEnabled()) {
                         logger.debug("Contact hasn't any data for twins search");
                     }
@@ -212,7 +212,7 @@ public class GALContactSyncSource extends ZimbraSyncSource {
                     logger.debug("The twin's is zimbra contact with id='"
                             + item.getKey().getKeyAsString() + "'=" + toString(twins));
                 else
-                    logger.debug("Cann't find any twins for '" + item.getKey().getKeyAsString()
+                    logger.debug("Can't find any twins for '" + item.getKey().getKeyAsString()
                             + "'");
             }
             return twins;

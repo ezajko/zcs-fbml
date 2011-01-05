@@ -437,7 +437,7 @@ public class CalendarUtils {
                         comp.add(at);
                     }
                 }
-                // BUGFIX - We cann't set organizer different from user who
+                // BUGFIX - We can't set organizer different from user who
                 // request sync
                 // By default it set to user who request sync
                 // if(organizerEmail!=null){
@@ -1348,7 +1348,7 @@ public class CalendarUtils {
         // if (/*convertDaylight ||*/ convertTimezone) {
         // long time = calendar.getTimeInMillis();
         // if (convertTimezone) {
-        // // tz cann't be null because convertTimezone in this case
+        // // tz can't be null because convertTimezone in this case
         // // must be null
         // time -= stdoff * 60 * 1000L;
         // }
