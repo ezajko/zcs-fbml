@@ -14,8 +14,14 @@
 package ru.korusconsulting.connector.base;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,7 +73,7 @@ public class ZimbraPort {
 
     /**
      * Create zimbra port with specified URL
-     * 
+     *
      * @param _endpoint
      */
     public ZimbraPort(URL _endpoint) {
@@ -89,7 +95,7 @@ public class ZimbraPort {
 
     /**
      * Init Http connection
-     * 
+     *
      * @return
      */
     private boolean init() {
@@ -108,7 +114,7 @@ public class ZimbraPort {
 
     /**
      * Request autorization on server with specified credentials
-     * 
+     *
      * @param principal
      *            Sync principal
      * @return response
@@ -144,7 +150,7 @@ public class ZimbraPort {
         ccontext.setAuthToken(authToken.getTextTrim());
         ccontext.processContext(soapHelper.getContext(response));
         folderHolder.setRootFolder(soapHelper.getRootFolder(response));
-        
+
         if(soapHelper.getRootTags(response) != null)
         	tagHolder.setTags(soapHelper.getRootTags(response).elements());
 
@@ -153,7 +159,7 @@ public class ZimbraPort {
 
     /**
      * Request Full information about contacts, photo include
-     * 
+     *
      * @return Response method element
      * @throws IOException -
      *             IOError occur
@@ -209,7 +215,7 @@ public class ZimbraPort {
 
     /**
      * Request All available information about contact
-     * 
+     *
      * @param syncPhoto
      * @return Contact
      * @throws IOException -
@@ -265,7 +271,7 @@ public class ZimbraPort {
      * Request all contact with identification information We have two way
      * detect indentical Contact, first way - by Id, second way - by firstName,
      * lastName and email1
-     * 
+     *
      * @return Response method element
      * @throws IOException -
      *             IOError occur
@@ -303,7 +309,7 @@ public class ZimbraPort {
      * Request all contact with identification information We have two way
      * detect identical Contact, first way - by Id, second way - by firstName,
      * lastName and email1
-     * 
+     *
      * @return Response method element
      * @throws IOException -
      *             IOError occur
@@ -351,7 +357,7 @@ public class ZimbraPort {
 
     /**
      * Remove all items in the element itemsResponse
-     * 
+     *
      * @param itemsResponse -
      *            The element that contains items (contact, appt, etc.)
      * @throws IOException -
@@ -381,7 +387,7 @@ public class ZimbraPort {
 
     /**
      * Create contact and push it on server
-     * 
+     *
      * @param c
      *            the contact from phone
      * @return response of create
@@ -452,7 +458,7 @@ public class ZimbraPort {
 
     /**
      * Modify contact from phone
-     * 
+     *
      * @param c -
      *            userContact
      * @param oldTags
@@ -537,7 +543,7 @@ public class ZimbraPort {
     /**
      * Delete contact by contact Id, if soft parameter is true then contact
      * moved in the trash folder
-     * 
+     *
      * @param contactId -
      *            Contact Id
      * @param soft -
@@ -573,7 +579,7 @@ public class ZimbraPort {
     /**
      * Delete item by id, if soft parameter is true then item moved in the trash
      * folder
-     * 
+     *
      * @param contactId -
      *            Contact Id
      * @param soft -
@@ -608,7 +614,7 @@ public class ZimbraPort {
 
     /**
      * Send request to zimra and return response from them
-     * 
+     *
      * @param request
      *            Request
      * @return response
@@ -620,7 +626,7 @@ public class ZimbraPort {
     private Document sendRequest(Document request) throws IOException, SoapRequestException {
         try {
             writer.write(request);
-            byte[] b = request.asXML().getBytes(ZConst.ENCODING);
+            byte[] b = safeEncode(request.asXML(), ZConst.ENCODING).getBytes();
             ConnectionUtils.writeToStream(b, urlConnection.getOutputStream());
             Document d = reader.read(urlConnection.getInputStream());
             writer.write(d);
@@ -636,9 +642,22 @@ public class ZimbraPort {
         }
     }
 
+    private String safeEncode(String str, String charset) throws UnsupportedEncodingException{
+    	CharsetDecoder d = Charset.forName(charset).newDecoder();
+    	byte[] bytearray = str.getBytes();
+	    try {
+	    	CharBuffer r = d.decode(ByteBuffer.wrap(bytearray));
+	    	r.toString();
+			return str;
+	    }
+	    catch(CharacterCodingException e) {
+	    	return new String(str.getBytes(charset));
+	    }
+    }
+
     /**
      * Send request to zimra and return response from them
-     * 
+     *
      * @param request
      *            Request
      * @return response
@@ -650,7 +669,7 @@ public class ZimbraPort {
     Document sendRequest(String request) throws IOException, SoapRequestException {
         try {
             writer.write(request, "");
-            byte[] b = request.getBytes(ZConst.ENCODING);
+            byte[] b = safeEncode(request, ZConst.ENCODING).getBytes();
             ConnectionUtils.writeToStream(b, urlConnection.getOutputStream());
             Document d = reader.read(urlConnection.getInputStream());
             writer.write(d);
@@ -664,7 +683,7 @@ public class ZimbraPort {
     /**
      * Create template for Zimbra soap call, with specified function name and
      * namespace
-     * 
+     *
      * @param function
      *            Function name
      * @param namespace
@@ -689,7 +708,7 @@ public class ZimbraPort {
 
     /**
      * Return Trash folder id
-     * 
+     *
      * @return trash folder id
      */
     public String getTrashFolderId() {
@@ -698,7 +717,7 @@ public class ZimbraPort {
 
     /**
      * Return document Factory
-     * 
+     *
      * @return Document Factory
      */
     public DocumentFactory getDocumentFactory() {
@@ -707,7 +726,7 @@ public class ZimbraPort {
 
     /**
      * Request Full information about calendars
-     * 
+     *
      * @return Response method element
      * @throws IOException -
      *             IOError occur
@@ -729,16 +748,16 @@ public class ZimbraPort {
                 {
                     query.setText("item:all");
                 }
-    
+
                 calendarRequest.add(query);
-    
+
                 calendarRequest.addAttribute(ZConst.A_OFFSET, String.valueOf(offset));
                 calendarRequest.addAttribute(ZConst.A_LIMIT, "1000");
                 calendarRequest.addAttribute(ZConst.A_TYPES, task ? ZConst.E_TASK : "appointment");
                 calendarRequest.addAttribute(ZConst.A_SORT_BY, "dateDesc");
             }
             Document response = sendRequest(request);
-            
+
             Element calendarsResponse = soapHelper.getBody(response).element(ZConst.SEARCH_RESPONSE);
             hasMore = "1".equals(calendarsResponse.attributeValue("more"));
             offset += calendarsResponse.elements().size();
@@ -747,7 +766,7 @@ public class ZimbraPort {
                 allCalendarResponse = (Element) calendarsResponse.detach();
             }
             else {
-                List <Element> elements = calendarsResponse.elements();
+                List<Element> elements = calendarsResponse.elements();
                 ListIterator<Element> iterator = elements.listIterator();
                 while(iterator.hasNext()){
                     Element node = iterator.next();
@@ -761,8 +780,8 @@ public class ZimbraPort {
 
     /**
      * Request Full information about calendars
-     * @param phoneTimeZone 
-     * 
+     * @param phoneTimeZone
+     *
      * @return Response method element
      * @throws IOException -
      *             IOError occur
@@ -821,8 +840,8 @@ public class ZimbraPort {
 
     /**
      * Request All available information about calendar
-     * @param phoneTimeZone 
-     * 
+     * @param phoneTimeZone
+     *
      * @return Contact
      * @throws IOException -
      *             IOError occur
@@ -877,7 +896,7 @@ public class ZimbraPort {
 
     /**
      * Create contact and push it on server
-     * 
+     *
      * @param c
      *            the contact from phone
      * @return response of create
@@ -960,7 +979,7 @@ public class ZimbraPort {
 
     /**
      * Create folder if it's doesn't exist with name from pfolder property.
-     * 
+     *
      * @param pfolder -
      *            property that contain folder name
      * @param folderType -
@@ -1084,7 +1103,7 @@ public class ZimbraPort {
 
     /**
      * Modify calendar from phone
-     * 
+     *
      * @param uid -
      *            invite UID
      * @param c -

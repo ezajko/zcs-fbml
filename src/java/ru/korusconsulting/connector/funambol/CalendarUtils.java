@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 KorusConsulting
- * 
+ *
  * Author: Roman Bliznets <RBliznets@korusconsulting.ru>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -174,7 +174,7 @@ public class CalendarUtils {
     private static final String MONTHLY = "MON";
     private static final String YEARLY = "YEA";
     private static final String A_ATTENDEE_NAME = "d";
-    
+
     private final HashMap<String, TimeZone> timeZonesHash= new HashMap<String, TimeZone>();
 
     private static CalendarUtils instance;
@@ -291,7 +291,7 @@ public class CalendarUtils {
 
     /**
      * Convert Calendar object into Element for zimbra soap request
-     * 
+     *
      * @param -
      *            the calendar object
      * @param df -
@@ -752,8 +752,21 @@ public class CalendarUtils {
                     }
 
                     Element recurElem = comp.element(E_RECURENCE);
-                    if (recurElem != null)
-                        cc.setRecurrencePattern(getRecurrenceAsProperty(recurElem));
+                    
+                    //FIXME: check if this works (patched)
+                    if (recurElem != null) {
+                        String d = startDate.attributeValue(A_DATETIME);
+                        String tz = startDate.attributeValue(A_TIMEZONE);
+                    	try {
+							d = correctTimeZone(d,timezones.get(tz),TimeZone.getTimeZone("UTC"));
+							if(!d.endsWith("Z")) d+="Z";
+						} catch (ConverterException e) {
+							//Handled in correctTimeZone
+						}
+                        cc.setRecurrencePattern(getRecurrenceAsProperty(recurElem, d));
+                    }
+                    //if (recurElem != null)
+                       // cc.setRecurrencePattern(getRecurrenceAsProperty(recurElem));
 
                     Element organizer = comp.element("or");
                     String organizerEmail = null;
@@ -808,7 +821,7 @@ public class CalendarUtils {
                     // Element startDateEl = comp.element(E_STARTDATE);
                     // if (startDateEl != null)
                     // cc.setDtStart(getDateProperty(timezones, startDateEl));
-                    //    
+                    //
                     // Element endDate = comp.element(E_ENDDATE);
                     // if (endDate != null) {
                     // cc.setDtEnd(getDateProperty(timezones, endDate));
@@ -838,7 +851,8 @@ public class CalendarUtils {
         return c;
     }
 
-    private RecurrencePattern getRecurrenceAsProperty(Element recur) {
+	//FIXME: check if this works (patched)
+    private RecurrencePattern getRecurrenceAsProperty(Element recur, String defaultStartDatePat) {
         List<Element> listEl = recur.elements();
         byte typeId = RecurrencePattern.UNSPECIFIED;
         boolean first = true;
@@ -954,6 +968,8 @@ public class CalendarUtils {
 
             }
         }
+		//FIXME: check if this works or not (patched)
+        if(!startDatePatternFind) startDatePattern = defaultStartDatePat;
         RecurrencePattern rp = new RecurrencePattern(typeId,
                                                      interval,
                                                      monthOfYear,
@@ -1023,7 +1039,7 @@ public class CalendarUtils {
     /**
      * Convert zimbra duration tag into iCal spec duration for more information
      * see RFC 2445 iCalendar specification
-     * 
+     *
      * @param durationDate
      * @return
      */
@@ -1061,7 +1077,7 @@ public class CalendarUtils {
     /**
      * Convert iCal duration tag into zimbra duration for more information see
      * RFC 2445 iCalendar specification
-     * 
+     *
      * @param durationDate
      * @return
      */
@@ -1131,7 +1147,7 @@ public class CalendarUtils {
     /**
      * Recommendation - don't use version field if you don't known exactly know
      * that you do
-     * 
+     *
      * @param type
      * @param version
      * @param c
@@ -1144,7 +1160,7 @@ public class CalendarUtils {
             String charset) throws ConverterException {
         byte[] content = null;
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)) {
-            CalendarToSIFE conv = new CalendarToSIFE(null, charset);
+    		CalendarToSIFE conv = new CalendarToSIFE(timezone, charset);
             content = conv.convert(c).getBytes();
         } else if (PhoneDependedConverter.SIFT_TYPE.equals(type)) {
             TaskToSIFT conv = new TaskToSIFT(timezone, charset);
@@ -1173,7 +1189,7 @@ public class CalendarUtils {
     /**
      * Recommendation - don't use version field if you don't known exactly know
      * that you do
-     * 
+     *
      * @param type
      * @param version
      *            version of calendar
@@ -1183,10 +1199,11 @@ public class CalendarUtils {
      * @return
      * @throws ConverterException
      */
-    
+
 	public static Calendar convertFrom(String type, String version, byte[] content,
             TimeZone timezone, String charset) throws ConverterException {
         Calendar calendar = null;
+        if(type == null) type = guessType(new String(content));
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)
                 || PhoneDependedConverter.SIFT_TYPE.equals(type)) {
             SIFCalendarParser sifParser;
@@ -1224,6 +1241,28 @@ public class CalendarUtils {
         return calendar;
     }
 
+	/**
+	 * Essaye de deviner le type d'un element en fonction de son contenu
+	 *
+	 * @param content Le contenu de l'élément
+	 * @return Le type déterminé
+	 */
+	protected static String guessType(String content) {
+		FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.CalendarUtils");
+		if (log.isTraceEnabled()) log.trace("Guessing type based on content");
+		String type=null;
+		content = content.replaceAll("(?s)(\\A(\\n|\\r)*)|((\\n|\\r)*\\Z)", "");//Trims \r and \n at the beginning and the end of the string
+		if (log.isTraceEnabled()) log.debug("Content : <<"+content+">>");
+		if(content.matches("(?s)\\ABEGIN:VCALENDAR(.*)END:VCALENDAR\\Z")) {//TODO reconnaitre ICal
+			type = PhoneDependedConverter.VCAL_TYPE;
+		}
+		else if(content.matches("(?s)\\A<\\?xml(.*)<appointment>(.*)<SIFVersion>(.*)</SIFVersion>(.*)</appointment>\\Z")) {
+			type = PhoneDependedConverter.SIFE_TYPE;
+		}
+		if (log.isTraceEnabled()) log.trace("Guessed type : "+type);
+		return type;
+	}
+
     private Short getShort(HashMap<String, Short> map, String key) {
         Short val = (Short) map(map, key);
         if (val != null)
@@ -1251,9 +1290,7 @@ public class CalendarUtils {
         TimeZone timeZone = getTimeZone(tz);
         try {
             if (sDate.indexOf('Z') != -1) {
-                //
                 // No conversion is required
-                //
                 sDate=TimeUtils.convertUTCDateToLocal(sDate, phoneTimeZone);
                 return sDate;
             }
@@ -1335,7 +1372,7 @@ public class CalendarUtils {
 
     /**
      * Create new timezone by timezoneElement
-     * 
+     *
      * @param tz
      * @return
      */
@@ -1347,16 +1384,16 @@ public class CalendarUtils {
             if(timeZone==null){
                 int stdoff = Integer.parseInt(tz.attributeValue("stdoff"));
                 int rawoffset = stdoff * 60 * 1000;
-                
+
                 SimpleTimeZone simpleTimeZone = new SimpleTimeZone(rawoffset, timeZoneId);
-                
+
                 if(tz.attributeValue("dayoff")!=null){ //parse daylight saving  if possible
                     int dstoff = Integer.parseInt(tz.attributeValue("dayoff")) * 60 * 1000 - rawoffset;
                     Element dlElement = tz.element("daylight");
                     Element stElement = tz.element("standard");
-        
+
                     simpleTimeZone.setDSTSavings(dstoff);
-        
+
                     int mMonth;
                     int mDayOfMonth;
                     int mDayOfWeek;
@@ -1364,7 +1401,7 @@ public class CalendarUtils {
                     int hour = Integer.parseInt(dlElement.attributeValue("hour"));
                     int min = Integer.parseInt(dlElement.attributeValue("min"));
                     int sec = Integer.parseInt(dlElement.attributeValue("sec"));
-        
+
                     mMonth = Integer.parseInt(dlElement.attributeValue("mon")) - 1;
                     String weekAtr = dlElement.attributeValue("week");
                     int week = weekAtr == null ? 0 : Integer.parseInt(weekAtr);
@@ -1380,14 +1417,14 @@ public class CalendarUtils {
                         mDayOfMonth = Integer.parseInt(dlElement.attributeValue("mday"));
                         mDayOfWeek = 0;
                     }
-        
+
                     mDtStartMillis = hour * 3600000 + min * 60000 + sec * 1000;
                     simpleTimeZone.setStartRule(mMonth, mDayOfMonth, mDayOfWeek, mDtStartMillis);
-        
+
                     hour = Integer.parseInt(stElement.attributeValue("hour"));
                     min = Integer.parseInt(stElement.attributeValue("min"));
                     sec = Integer.parseInt(stElement.attributeValue("sec"));
-        
+
                     mMonth = Integer.parseInt(stElement.attributeValue("mon")) - 1;
                     weekAtr = stElement.attributeValue("week");
                     week = weekAtr == null ? 0 : Integer.parseInt(weekAtr);
@@ -1406,7 +1443,7 @@ public class CalendarUtils {
                     mDtStartMillis = hour * 3600000 + min * 60000 + sec * 1000;
                     simpleTimeZone.setEndRule(mMonth, mDayOfMonth, mDayOfWeek, mDtStartMillis);
                 }
-   
+
                 timeZone = simpleTimeZone;
                 timeZonesHash.put(timeZoneId, timeZone);
             }

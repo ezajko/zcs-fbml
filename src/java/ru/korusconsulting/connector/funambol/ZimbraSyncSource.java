@@ -174,7 +174,9 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
             }
             removeAllSyncItems();
         }
-        LastTimestamp last = new LastTimestamp(principal.getId(), getSourceURI());
+        
+        //TODO: we are doing nothing with lastSync, so why set it?
+       /* LastTimestamp last = new LastTimestamp(principal.getId(), getSourceURI());
         try {
             Configuration.getConfiguration().getStore().read(last);
         } catch (NotFoundException e) {
@@ -183,7 +185,7 @@ public abstract class ZimbraSyncSource extends AbstractSyncSource implements Syn
             logger.error("", e);
             throw new SyncSourceException("Error reading last timestamp", e);
         }
-        lastSync = new Timestamp(last.end);
+        lastSync = new Timestamp(last.end);*/
     }
 
     

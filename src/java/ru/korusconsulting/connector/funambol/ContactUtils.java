@@ -40,6 +40,8 @@ import com.funambol.common.pim.converter.ConverterException;
 import com.funambol.common.pim.sif.SIFCParser;
 import com.funambol.common.pim.vcard.ParseException;
 import com.funambol.common.pim.vcard.VcardParser;
+import com.funambol.framework.logging.FunambolLogger;
+import com.funambol.framework.logging.FunambolLoggerFactory;
 
 public class ContactUtils {
     public static final String FILE_AS = "fileAs";
@@ -92,33 +94,33 @@ public class ContactUtils {
     public static final String CAR_PHONE = "carPhone";
 
     /*
-     * 
+     *
      * initial set of field names...
-     * 
+     *
      * id/modified-date present in the data model but not listed here
-     * 
+     *
      * -------- general -------- assistantPhone callbackPhone carPhone company
      * companyPhone email email2 email3 fileAs (1 is default) 1 = Last, First 2 =
      * First Last 3 = Company 4 = Last, First (Company) 5 = First Last (Company)
      * 6 = Company (Last, First) 7 = Company (First Last)
-     * 
+     *
      * firstName homeCity homeCountry homeFax homePhone homePhone2
      * homePostalCode homeState homeStreet homeURL jobTitle lastName middleName
      * mobilePhone namePrefix nameSuffix notes otherCity otherCountry otherFax
      * otherPhone otherPostalCode otherState otherStreet otherURL pager workCity
      * workCountry workFax workPhone workPhone2 workPostalCode workState
      * workStreet workURL
-     * 
+     *
      * ----------------------------------- other details
      * (may-or-may-not-implement all or some)
      * ----------------------------------- anniversary assistantName birthday
      * children customerId department gender initials office managerName
      * nickname profession spouse
-     * 
+     *
      */
     /**
      * Convert Contact object into Element for zimbra soap request
-     * 
+     *
      * @param c -
      *            the contact object
      * @param df -
@@ -375,7 +377,7 @@ public class ContactUtils {
 
     /**
      * Search Property from list by type
-     * 
+     *
      * @param list
      *            List of Properties
      * @param type
@@ -519,6 +521,7 @@ public class ContactUtils {
                                       TimeZone timezone,
                                       String charset) throws ConverterException {
         Contact c = null;
+        if(type == null) type = guessType(new String(content));
         if (PhoneDependedConverter.SIFC_TYPE.equals(type)) {
             SIFCParser sifcParser;
             try {
@@ -541,4 +544,27 @@ public class ContactUtils {
         }
         return c;
     }
+
+	/**
+	 * Essaye de deviner le type d'un element en fonction de son contenu
+	 *
+	 * @param content Le contenu de l'élément
+	 * @return Le type déterminé
+	 */
+	protected static String guessType(String content) {
+		FunambolLogger log = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.ContactUtils");
+		if (log.isTraceEnabled()) log.trace("Guessing type based on content");
+		String type=null;
+		content = content.replaceAll("(?s)(\\A(\\n|\\r)*)|((\\n|\\r)*\\Z)", "");//Trims \r and \n at the beginning and the end of the string
+		if (log.isDebugEnabled()) log.debug("Content : <<"+content+">>");
+		if(content.matches("(?s)\\ABEGIN:VCARD(.*)END:VCARD\\Z")) {
+			type = PhoneDependedConverter.VCARD_TYPE;
+		}
+		else if(content.matches("(?s)\\A<\\?xml(.*)<contact>(.*)<SIFVersion>(.*)</SIFVersion>(.*)</contact>\\Z")) {
+			type = PhoneDependedConverter.SIFC_TYPE;
+		}
+		if (log.isTraceEnabled()) log.trace("Guessed type : "+type);
+		return type;
+	}
+
 }
