@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -192,7 +193,7 @@ public class ContactSyncSourceConfigPanel  extends SourceManagementPanel impleme
         String value = null;
 
         value = nameValue.getText();
-        if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isBlank(value)) {
             throw new IllegalArgumentException("Field 'Name' cannot be empty. Please provide a SyncSource name.");
         }
 
@@ -201,7 +202,7 @@ public class ContactSyncSourceConfigPanel  extends SourceManagementPanel impleme
         }
 
         value = sourceURIValue.getText();
-        if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isBlank(value)) {
             throw new IllegalArgumentException("Field 'Source URI' cannot be empty. Please provide a SyncSource URI.");
         }
         
@@ -215,23 +216,48 @@ public class ContactSyncSourceConfigPanel  extends SourceManagementPanel impleme
     }
 
     /**
-     * Fill ZimbraSynSource value s
+     * Fill ZimbraSyncSource value s
      */
     private void getValues() {
-        ContentType[] contentTypes;
+        ContentType[] contentTypes = null;
+    	ArrayList<ContentType> ctypeList = new ArrayList<ContentType>();
         syncSource.setSourceURI(sourceURIValue.getText().trim());
         
         syncSource.setName(nameValue.getText().trim());
+        SyncSourceInfo info = syncSource.getInfo();
+        
+        if (info != null && info.getSupportedTypes().length > 0) {
+        	for (int i = 0; i < info.getSupportedTypes().length; i++) {
+        		ctypeList.add((info.getSupportedTypes())[i]);
+        	}
+        }
         if(syncSource instanceof CalendarSyncSource){
-            contentTypes=new ContentType[] { new ContentType("text/x-vcalendar", "1.0"),
-                    new ContentType("text/x-vcalendar", "2.0"), 
-                    new ContentType("text/calendar","1.0") };
+        	
+        	if (!ctypeList.contains(new ContentType("text/x-vcalendar", "1.0")))
+        		ctypeList.add(new ContentType("text/x-vcalendar", "1.0"));
+        	if (!ctypeList.contains(new ContentType("text/x-vcalendar", "2.0")))
+        		ctypeList.add(new ContentType("text/x-vcalendar", "2.0"));
+        	if (!ctypeList.contains(new ContentType("text/calendar","1.0")))
+        		ctypeList.add(new ContentType("text/calendar","1.0"));
+        	if (!ctypeList.contains(new ContentType("text/calendar","2.0")))
+        		ctypeList.add(new ContentType("text/calendar","2.0"));
+            //contentTypes=new ContentType[] { new ContentType("text/x-vcalendar", "1.0"),
+                    //new ContentType("text/x-vcalendar", "2.0"), 
+                    //new ContentType("text/calendar","1.0") };
         }
         else{
-            contentTypes=new ContentType[] { new ContentType("text/x-vcard", "2.1"),
-                new ContentType("text/vcard", "3.0"), 
-                new ContentType("text/x-s4j-sifc","1.0") };
+        	if (!ctypeList.contains(new ContentType("text/x-vcard", "2.1")))
+        		ctypeList.add(new ContentType("text/x-vcard", "2.1"));
+        	if (!ctypeList.contains(new ContentType("text/vcard", "3.0")))
+        		ctypeList.add(new ContentType("text/vcard", "3.0"));
+        	if (!ctypeList.contains(new ContentType("text/x-s4j-sifc","1.0")))
+        		ctypeList.add(new ContentType("text/x-s4j-sifc","1.0"));
+            //contentTypes=new ContentType[] { new ContentType("text/x-vcard", "2.1"),
+                //new ContentType("text/vcard", "3.0"), 
+               // new ContentType("text/x-s4j-sifc","1.0") };
         }
+        
+        contentTypes = ctypeList.toArray(contentTypes);
 
 //        JOptionPane.showMessageDialog(new JFrame(), "zimbraURLValue:"+zimbraURLValue.getText());
         syncSource.setZimbraUrl(zimbraURLValue.getText());

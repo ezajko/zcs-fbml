@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import ru.korusconsulting.connector.base.ZConst;
@@ -51,21 +52,21 @@ public class ContactManager extends Manager<Contact> {
             Properties prop = ContactUtils.toProperties(cn);
             //            if(prop.getProperty("firstName", "").equals(firstName))
             boolean twin = true;
-            if (!(firstName == null && lastName == null && email == null)) {
-                if (firstName != null) {
+            if (!(StringUtils.isBlank(firstName) && StringUtils.isBlank(lastName) && StringUtils.isBlank(email))) {
+                if (!StringUtils.isBlank(firstName)) {
                     twin = twin
-                            & firstName.equals(prop.getProperty(ContactUtils.FIRST_NAME));
+                            & firstName.equalsIgnoreCase(prop.getProperty(ContactUtils.FIRST_NAME));
                 }
-                if (lastName != null) {
+                if (!StringUtils.isBlank(lastName)) {
                     twin = twin
-                            & lastName.equals(prop.getProperty(ContactUtils.LAST_NAME));
+                            & lastName.equalsIgnoreCase(prop.getProperty(ContactUtils.LAST_NAME));
                 }
-                if (email != null) {
-                    twin = twin | email.equals(prop.getProperty(ContactUtils.EMAIL));
+                if (!StringUtils.isBlank(email)) {
+                    twin = twin | email.equalsIgnoreCase(prop.getProperty(ContactUtils.EMAIL));
                 }
             } else {
-                if (company != null) {
-                    twin = twin & company.equals(prop.getProperty(ContactUtils.COMPANY));
+                if (!StringUtils.isBlank(company)) {
+                    twin = twin & company.equalsIgnoreCase(prop.getProperty(ContactUtils.COMPANY));
                 } else {
                     twin = false;
                     logger.warn("Contact hasn't any data for twins search");

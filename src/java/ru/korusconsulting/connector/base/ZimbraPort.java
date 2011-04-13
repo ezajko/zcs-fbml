@@ -32,6 +32,7 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -400,6 +401,19 @@ public class ZimbraPort {
         if (!init()) {
             return null;
         }
+        
+        String firstName = ContactUtils.getFirstName(c);
+        String lastName = ContactUtils.getLastName(c);
+        String email = ContactUtils.getEmail(c);
+        String company = ContactUtils.getCompany(c);
+        
+        if (	StringUtils.isBlank(firstName) 
+        		&& StringUtils.isBlank(lastName) 
+        		&& StringUtils.isBlank(email) 
+        		&& StringUtils.isBlank(company)) {
+        	return null;
+        }
+        
         Document request = createZimbraCall(ZConst.CREATE_CONTACT_REQUEST, ZConst.URN_ZIMBRA_MAIL);
         String folderName = c.getFolder();
         String folderId = null;
@@ -412,6 +426,7 @@ public class ZimbraPort {
                                                      documentFactory,
                                                      ZConst.URN_ZIMBRA_MAIL,
                                                      false);
+            
             if (contact.hasContent()) {
                 contactsRequest.add(contact);
                 if (folderId != null) {

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 
@@ -337,7 +338,7 @@ public class ContactUtils {
     }
 
     private static void createEMail(ContactDetail contactDetail, String property, String type) {
-        if (property == null || property.trim().equals("")) {
+        if (StringUtils.isBlank(property)) {
             return;
         }
         Email email = new Email();
@@ -347,7 +348,7 @@ public class ContactUtils {
     }
 
     private static void createPhone(ContactDetail contactDetail, String property, String type) {
-        if (property == null || property.trim().equals("")) {
+        if (StringUtils.isBlank(property)) {
             return;
         }
         Phone phone = new Phone();
@@ -357,7 +358,7 @@ public class ContactUtils {
     }
 
     private static void createWebPage(ContactDetail contactDetail, String property, String type) {
-        if (property == null || property.trim().equals("")) {
+        if (StringUtils.isBlank(property)) {
             return;
         }
         WebPage webPage = new WebPage();
@@ -368,7 +369,7 @@ public class ContactUtils {
 
     private static Property getProperty(String propValue) {
         Property prop = new Property();
-        if (propValue == null || propValue.toString().trim().equals(""))
+        if (StringUtils.isBlank(propValue.toString()))
             return prop;// BUGFIX - If one of properties doesn't exist then
         // exception occur
         prop.setPropertyValue(propValue);
@@ -427,7 +428,7 @@ public class ContactUtils {
 
     private static boolean isEmpty(Property prop) {
         return prop == null || prop.getPropertyValue() == null
-                || prop.getPropertyValueAsString().trim().equals("");
+                || StringUtils.isBlank(prop.getPropertyValueAsString());
     }
 
     private static void addContactAttr(String name,
@@ -447,7 +448,7 @@ public class ContactUtils {
                                        DocumentFactory documentFactory,
                                        Element contact,
                                        boolean u) {
-        if ((value == null || value.trim().equals("")) && !u) {
+        if (StringUtils.isBlank(value) && !u) {
             return;
         }
         Element attr = documentFactory.createElement("a", contact.getNamespaceURI());

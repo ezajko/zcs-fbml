@@ -1160,6 +1160,10 @@ public class CalendarUtils {
     public static byte[] convertTo(String type, String version, Calendar c, TimeZone timezone,
             String charset) throws ConverterException {
         byte[] content = null;
+        
+        FunambolLogger logger = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.CalendarUtils");
+        
+        
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)) {
     		CalendarToSIFE conv = new CalendarToSIFE(timezone, charset);
             content = conv.convert(c).getBytes();
@@ -1182,6 +1186,7 @@ public class CalendarUtils {
 
         } else {
         	//TODO: add default type to the configuration of the syncsource
+        	logger.error("Unsupported calendar type: " + type);
             throw new ConverterException("Unsupported type:" + type);
         }
         return content;
@@ -1204,6 +1209,10 @@ public class CalendarUtils {
 	public static Calendar convertFrom(String type, String version, byte[] content,
             TimeZone timezone, String charset) throws ConverterException {
         Calendar calendar = null;
+        
+        FunambolLogger logger = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.CalendarUtils");
+        
+        
         if(type == null) type = guessType(new String(content));
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)
                 || PhoneDependedConverter.SIFT_TYPE.equals(type)) {
@@ -1233,10 +1242,12 @@ public class CalendarUtils {
                 vcalendar.addProperty("VERSION", version == null ? "2.0" : version);
                 calendar = vconv.vcalendar2calendar(vcalendar);
             } catch (ParseException e) {
+            	logger.error("Calendar parse error:", e);
                 throw new ConverterException(e);
             }
         } else {
         	//TODO: add default type to the configuration of the syncsource
+        	logger.error("Unsupported calendar type: " + type);
             throw new ConverterException("Unsupported type:" + type);
         }
         return calendar;
