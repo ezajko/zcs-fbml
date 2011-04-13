@@ -15,6 +15,7 @@ package ru.korusconsulting.connector.manager;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -83,10 +84,12 @@ public class CalendarManager extends Manager<Calendar> {
         }
         Element deletedEl = syncResponse.element(ZConst.E_DELETED);
         String[] saved = servedItems.toArray(new String[0]);
+        
 
         if (deletedEl != null) {
             String ids = deletedEl.attributeValue(ZConst.A_IDS);
-            filterItems(saved, ids.split(","));
+            delItems.addAll(Arrays.asList(ids.split(",")));
+            //filterItems(saved, ids.split(","));
         }
         for (Iterator iterator = itemsResponse.elementIterator(); iterator.hasNext();) {
             Element cn = (Element) iterator.next();
@@ -370,6 +373,7 @@ public class CalendarManager extends Manager<Calendar> {
                     dtEnd.set(java.util.Calendar.HOUR_OF_DAY, 23);
                     dtEnd.set(java.util.Calendar.MINUTE, 59);
                     dtEnd.set(java.util.Calendar.SECOND, 00);
+
                 }
             }
         }
@@ -423,15 +427,15 @@ public class CalendarManager extends Manager<Calendar> {
     @Override
     public String updItem(String key, Calendar calendar) throws IOException, SoapRequestException,
             SyncSourceException {
-        // String oldFolderId = null;
-        // String oldTags = null;
+        String oldFolderId = null;
+        String oldTags = null;
         String invId = null;
         List<Element> items = itemsResponse.elements();
         for (int i = 0; i < items.size(); i++) {
             Element calEl = (Element) items.get(i);
             if (calEl.attributeValue(A_CALENDAR_ID).equals(key)) {
-                // oldFolderId = calEl.attributeValue(ZConst.A_FOLDER);
-                // oldTags = calEl.attributeValue(ZConst.A_TAG);
+                oldFolderId = calEl.attributeValue(ZConst.A_FOLDER);
+                oldTags = calEl.attributeValue(ZConst.A_TAG);
                 invId = calEl.attributeValue("invId");
             }
         }
@@ -440,10 +444,10 @@ public class CalendarManager extends Manager<Calendar> {
             // we have to create Contact
             key = addItem(calendar);
         } else {
-            zimbraPort.requestDeleteItem(invId, false);
-            key = addItem(calendar);
-            // zimbraPort.requestModifyCalendar(invId, calendar, oldFolderId,
-            // oldTags);
+            //zimbraPort.requestDeleteItem(invId, false);
+            //key = addItem(calendar);
+            zimbraPort.requestModifyCalendar(invId, calendar, oldFolderId,
+             oldTags);
         }
         return key;
     }

@@ -488,6 +488,7 @@ public class CalendarUtils {
         c.getCalendarContent().setCategories(prop);
     }
 
+
     private Element getRecurrenceAsElement(CalendarContent cc, DocumentFactory df, String namespace) {
         RecurrencePattern rp = cc.getRecurrencePattern();
         Element recur = df.createElement(E_RECURENCE, namespace);
@@ -1044,27 +1045,27 @@ public class CalendarUtils {
      * @return
      */
     private Property getDurationProperty(Element durationDate) {
-        Attribute negAttr = durationDate.attribute(A_NEGATIVE);
-        Attribute wAttr = durationDate.attribute(A_WEEK);// week
-        Attribute dAttr = durationDate.attribute(A_DAY);// day
-        Attribute hAttr = durationDate.attribute(A_HOUR);// hour
-        Attribute mAttr = durationDate.attribute(A_MINUTE);// minute
-        Attribute sAttr = durationDate.attribute(A_SECOND);// second
-
         StringBuilder sb = new StringBuilder();
+        Attribute negAttr = durationDate.attribute(A_NEGATIVE);
         if (negAttr != null) {
             sb.append(negAttr.getValue().equals("1") ? '-' : '+');
         }
         sb.append('P');
+        Attribute wAttr = durationDate.attribute(A_WEEK);// week
         if (wAttr != null) {
             sb.append(wAttr.getValue()).append(MOD_WEEK);
             return getProperty(sb.toString());
         }
+        
+        Attribute dAttr = durationDate.attribute(A_DAY);// day
         if (dAttr != null) {
             sb.append(dAttr.getValue()).append(MOD_DAY);
         }
-
-        if (hAttr != null) {// then specified Hours, Minutes, Seconds
+        
+        Attribute hAttr = durationDate.attribute(A_HOUR);// hour
+        Attribute mAttr = durationDate.attribute(A_MINUTE);// minute
+        Attribute sAttr = durationDate.attribute(A_SECOND);// second
+        if (hAttr != null && mAttr != null && sAttr != null) {// then specified Hours, Minutes, Seconds
             sb.append(MOD_TIMESTAMP);
             sb.append(hAttr.getValue()).append(MOD_HOUR);
             sb.append(mAttr.getValue()).append(MOD_MINUTE);
