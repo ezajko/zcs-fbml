@@ -511,7 +511,8 @@ public class ContactUtils {
             }
         } else {
         	//TODO: add default type to the configuration of the syncsource
-            throw new ConverterException("Unsupported type:" + type);
+        	logger.error("Unsupported type: " + type + " there is no default contact sync protocol defined");
+            throw new ConverterException("Unsupported type: " + type + " there is no default contact sync protocol defined");
         }
         return content;
     }
@@ -541,7 +542,8 @@ public class ContactUtils {
             }
         } else {
         	//TODO: add default type to the configuration of the syncsource
-            throw new ConverterException("Unsupported type:" + type);
+        	logger.error("Unsupported type: " + type + " there is no default contact sync protocol defined");
+            throw new ConverterException("Unsupported type: " + type + " there is no default contact sync protocol defined");
         }
         return c;
     }

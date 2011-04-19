@@ -489,6 +489,7 @@ public class CalendarUtils {
     }
 
 
+
     private Element getRecurrenceAsElement(CalendarContent cc, DocumentFactory df, String namespace) {
         RecurrencePattern rp = cc.getRecurrencePattern();
         Element recur = df.createElement(E_RECURENCE, namespace);
@@ -1186,8 +1187,8 @@ public class CalendarUtils {
 
         } else {
         	//TODO: add default type to the configuration of the syncsource
-        	logger.error("Unsupported calendar type: " + type);
-            throw new ConverterException("Unsupported type:" + type);
+        	logger.error("Unsupported type: " + type + " there is no default calendar sync protocol defined");
+            throw new ConverterException("Unsupported type:" + type + " there is no default calendar sync protocol defined");
         }
         return content;
     }
@@ -1247,8 +1248,8 @@ public class CalendarUtils {
             }
         } else {
         	//TODO: add default type to the configuration of the syncsource
-        	logger.error("Unsupported calendar type: " + type);
-            throw new ConverterException("Unsupported type:" + type);
+        	logger.error("Unsupported type: " + type + " there is no default calendar sync protocol defined");
+            throw new ConverterException("Unsupported type:" + type + " there is no default calendar sync protocol defined");
         }
         return calendar;
     }
