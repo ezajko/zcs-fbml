@@ -68,7 +68,14 @@ public class ContactManager extends Manager<Contact> {
                 if (!StringUtils.isBlank(company)) {
                     twin = twin & company.equalsIgnoreCase(prop.getProperty(ContactUtils.COMPANY));
                 } else {
-                    twin = false;
+                	if (StringUtils.isBlank(prop.getProperty(ContactUtils.FIRST_NAME)) 
+                			&& StringUtils.isBlank(prop.getProperty(ContactUtils.LAST_NAME)) 
+                			&& StringUtils.isBlank(prop.getProperty(ContactUtils.EMAIL))
+                			&& StringUtils.isBlank(prop.getProperty(ContactUtils.COMPANY))
+                	)
+                		twin = true;
+                	else
+                		twin = false;
                     logger.warn("Contact hasn't any data for twins search");
                 }
             }

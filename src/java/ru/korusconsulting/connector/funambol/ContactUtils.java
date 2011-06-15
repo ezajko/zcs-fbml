@@ -94,6 +94,8 @@ public class ContactUtils {
     public static final String COMPANY = "company";
     public static final String CAR_PHONE = "carPhone";
 
+    private static FunambolLogger logger = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.CalendarUtils");
+
     /*
      *
      * initial set of field names...
@@ -425,6 +427,22 @@ public class ContactUtils {
         Property prop = c.getBusinessDetail().getCompany();
         return isEmpty(prop) ? null : prop.getPropertyValueAsString();
     }
+
+    public static String getPhone(Contact c) {
+    	List phones = c.getPersonalDetail().getPhones();
+        Property prop = find(phones, Def.PERSONAL_MOBILE_PHONE_NUM);
+
+        if (isEmpty(prop))
+        	prop = find(phones, Def.BUSINESS_PHONE_NUM);
+        if (isEmpty(prop))
+        	prop = find(phones, Def.PERSONAL_MOBILE_PHONE_NUM);
+        if (isEmpty(prop))
+        	prop = find(phones, Def.PERSONAL_HOME_PHONE_NUM);
+        if (isEmpty(prop))
+        	prop = find(phones, Def.PERSONAL_OTHER_PHONE_NUM);
+        return isEmpty(prop) ? null : prop.getPropertyValueAsString();
+    }
+
 
     private static boolean isEmpty(Property prop) {
         return prop == null || prop.getPropertyValue() == null

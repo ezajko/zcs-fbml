@@ -262,7 +262,7 @@ public class CalendarUtils {
         STATUS_COMPLETED = icalMapping.getProperty("task.value.STATUS.COMPLETED");
         taskStatus.put(icalMapping.getProperty("task.value.STATUS.COMPLETED"), "COMP");
         taskStatus.put(icalMapping.getProperty("task.value.STATUS.IN-PROCESS"), "INPR");
-        taskStatus.put(icalMapping.getProperty("task.value.STATUS.WAINTING"), "WAITING");
+        taskStatus.put(icalMapping.getProperty("task.value.STATUS.WAITING"), "WAITING");
         taskStatus.put(icalMapping.getProperty("task.value.STATUS.NEEDS-ACTION"), "NEED");
         taskStatus.put(icalMapping.getProperty("task.value.STATUS.CANCELLED"), "DEFERRED");
         // see #1934277
@@ -275,7 +275,8 @@ public class CalendarUtils {
 
         taskStatus_.put("COMP", icalMapping.getProperty("task.value.STATUS.COMPLETED"));
         taskStatus_.put("INPR", icalMapping.getProperty("task.value.STATUS.IN-PROCESS"));
-        taskStatus_.put("WAITING", icalMapping.getProperty("task.value.STATUS.NEEDS-ACTION"));
+        taskStatus_.put("WAITING", icalMapping.getProperty("task.value.STATUS.WAITING"));
+        taskStatus_.put("NEED", icalMapping.getProperty("task.value.STATUS.NEEDS-ACTION"));
         taskStatus_.put("DEFERRED", icalMapping.getProperty("task.value.STATUS.CANCELLED"));
 
         kindOfAttendee.put(Attendee.INDIVIDUAL, "IND");
@@ -754,7 +755,7 @@ public class CalendarUtils {
                     }
 
                     Element recurElem = comp.element(E_RECURENCE);
-                    
+
                     //FIXME: check if this works (patched)
                     if (recurElem != null) {
                         String d = startDate.attributeValue(A_DATETIME);
@@ -1057,12 +1058,12 @@ public class CalendarUtils {
             sb.append(wAttr.getValue()).append(MOD_WEEK);
             return getProperty(sb.toString());
         }
-        
+
         Attribute dAttr = durationDate.attribute(A_DAY);// day
         if (dAttr != null) {
             sb.append(dAttr.getValue()).append(MOD_DAY);
         }
-        
+
         Attribute hAttr = durationDate.attribute(A_HOUR);// hour
         Attribute mAttr = durationDate.attribute(A_MINUTE);// minute
         Attribute sAttr = durationDate.attribute(A_SECOND);// second
@@ -1161,10 +1162,10 @@ public class CalendarUtils {
     public static byte[] convertTo(String type, String version, Calendar c, TimeZone timezone,
             String charset) throws ConverterException {
         byte[] content = null;
-        
+
         FunambolLogger logger = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.CalendarUtils");
-        
-        
+
+
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)) {
     		CalendarToSIFE conv = new CalendarToSIFE(timezone, charset);
             content = conv.convert(c).getBytes();
@@ -1210,10 +1211,10 @@ public class CalendarUtils {
 	public static Calendar convertFrom(String type, String version, byte[] content,
             TimeZone timezone, String charset) throws ConverterException {
         Calendar calendar = null;
-        
+
         FunambolLogger logger = FunambolLoggerFactory.getLogger("funambol.zimbra.internal.CalendarUtils");
-        
-        
+
+
         if(type == null) type = guessType(new String(content));
         if (PhoneDependedConverter.SIFE_TYPE.equals(type)
                 || PhoneDependedConverter.SIFT_TYPE.equals(type)) {
@@ -1478,8 +1479,8 @@ public class CalendarUtils {
         dlMon = Integer.parseInt(dlElement.attributeValue("mon"));
         stMon = Integer.parseInt(stElement.attributeValue("mon"));
 
-        // I think it more perfomance then always create calendars for dayligh
-        // and standart time
+        // I think it has more performance then always create calendars for daylight
+        // and standard time
         if (dlMon < calendar.get(java.util.Calendar.MONTH)
                 && calendar.get(java.util.Calendar.MONTH) < stMon) {
             return true;
