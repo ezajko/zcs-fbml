@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
@@ -43,6 +44,7 @@ public class CalendarManager extends Manager<Calendar> {
     // Request by id each calendar and check if is't twins
     private boolean fullCalendarRequest = false;
     private ArrayList<Calendar> calendars = null;
+    private HashMap<String, Calendar> calendarscache = new HashMap<String, Calendar>();
     private CalendarHash[] calendarHash = null;
     private long lastToken;
     private Element syncResponse = null;
@@ -59,7 +61,7 @@ public class CalendarManager extends Manager<Calendar> {
         itemsResponse = zimbraPort.requestAllCalendarsIds(task);
         syncResponse = zimbraPort.requestSyncronization(String.valueOf(lastToken));
     }
-    
+
     public ArrayList<Calendar> getAllCalendars() throws IOException, SoapRequestException, ConversionException{
         ArrayList<String> ids=new ArrayList<String>();
         for (Iterator iterator = itemsResponse.elementIterator(); iterator.hasNext();) {
@@ -68,15 +70,17 @@ public class CalendarManager extends Manager<Calendar> {
             ids.add(id);
         }
         calendars = zimbraPort.requestAllCalendars(ids, task, phoneTimeZone);
+
+        fullCalendarRequest = true;
         return calendars;
-        
+
     }
 
     public void determineItemsState(Timestamp since) {
         if (prepared)
             return;
         prepared = true;
-        
+
         if (this.logger.isDebugEnabled()) {
         	this.logger.debug("CalendarManager::determineItemsState");
         	this.logger.debug("syncResponse:" + syncResponse.asXML());
@@ -84,7 +88,7 @@ public class CalendarManager extends Manager<Calendar> {
         }
         Element deletedEl = syncResponse.element(ZConst.E_DELETED);
         String[] saved = servedItems.toArray(new String[0]);
-        
+
 
         if (deletedEl != null) {
             String ids = deletedEl.attributeValue(ZConst.A_IDS);
@@ -99,7 +103,7 @@ public class CalendarManager extends Manager<Calendar> {
             	this.logger.debug("allItems ->:" + id);
             }
             allItems.add(id);
-            
+
             if (since != null && modTime > since.getTime()) {
                 boolean finded = false;
                 for (int i = 0; i < saved.length; i++) {
@@ -153,7 +157,7 @@ public class CalendarManager extends Manager<Calendar> {
                 delItems.add(saved[i]);
             }
         }
-        
+
 
     }
 
@@ -239,9 +243,9 @@ public class CalendarManager extends Manager<Calendar> {
 
             startDate = dtStart == null ? null : dtStart.getTime();
             endDate = dtEnd == null ? null : dtEnd.getTime();
-            
+
             if (!fullCalendarRequest) {
-                // Can be perfomance issue with request all calendars
+                // Can be performance issue with request all calendars
                 // but in this case we can quick return calendar instance
                 // if their not exist on the phone
                 calendars = zimbraPort.requestAllCalendars(allItems, task, phoneTimeZone);
@@ -251,9 +255,9 @@ public class CalendarManager extends Manager<Calendar> {
                 calendarHash = new CalendarHash[calendars.size()];
                 fullCalendarRequest = true;
             }
-            
+
             if (this.logger.isDebugEnabled()) {
-            	this.logger.debug("Start twin matching on: \nSOURCE:" 
+            	this.logger.debug("Start twin matching on: \nSOURCE:"
                 		+ " allDay: " + Boolean.toString(cc.isAllDay())
                 		+ " isTask: " + Boolean.toString(cc instanceof Task)
                 		+ " subject: " + subject
@@ -304,9 +308,9 @@ public class CalendarManager extends Manager<Calendar> {
                         }
                     }
                 }
-                
+
                 if (this.logger.isDebugEnabled()) {
-                	this.logger.debug("\tis twin matching on: \nTARGET:" 
+                	this.logger.debug("\tis twin matching on: \nTARGET:"
                     		+ " allDay: " + Boolean.toString(hash.allDay)
                     		+ " isTask: " + Boolean.toString(cc instanceof Task)
                     		+ " subject: " + hash.subject
@@ -336,17 +340,17 @@ public class CalendarManager extends Manager<Calendar> {
 
         java.util.Calendar dtStart = null;
         java.util.Calendar dtEnd = null;
-        
+
         hash.timezone = null;
         String dtStartStr = null;
         String dtEndStr = null;
-        
+
         try {
         	hash.timezone = TimeZone.getTimeZone(servcc.getDtStart().getTimeZone());
         } catch (NullPointerException e) {
         	hash.timezone = null;
         }
-        
+
         if (hash.timezone != null) {
         	long tzoffset = (long) hash.timezone.getRawOffset();
 
@@ -380,7 +384,7 @@ public class CalendarManager extends Manager<Calendar> {
 
         hash.startDate = dtStart == null ? null : dtStart.getTime();
         hash.endDate = dtEnd == null ? null : dtEnd.getTime();
-        
+
         return hash;
     }
 
@@ -403,11 +407,23 @@ public class CalendarManager extends Manager<Calendar> {
         int index = allItems.indexOf(key);
         if (index == -1)
             return null;
-        Calendar calendar;
-        if (fullCalendarRequest) {
-            calendar = calendars.get(index);
-        } else {
+        Calendar calendar = null;
+        boolean getfromzimbra = false;
+
+        try {
+        	calendar = calendarscache.get(key);
+
+        	if (calendar == null) {
+        		getfromzimbra = true;
+        	}
+        } catch (Exception e) {
+        	getfromzimbra = true;
+        }
+
+        if (getfromzimbra) {
             calendar = zimbraPort.requestCalendarById(key, task, phoneTimeZone);
+
+            calendarscache.put(key, calendar);
         }
 
         return calendar;
