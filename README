@@ -1,26 +1,35 @@
 DESCRIPTION
+
+Home page: http://sourceforge.net/projects/zimbrafunambol
+
 Synchronize funambol with zimbra. Connector can synchronize the follow items:
 - Contacts  (text/x-s4j-sifc and text/x-vcard)
 - Calendars (text/x-s4j-sife and text/x-vcalendar)
 - Tasks     (text/x-s4j-sift and text/calendar)
-Connector can't synchronize (but at future may be) Notes
+Connector can't synchronize Notes (But Zimbra 7 also has none anymore)
 
 --------------------------------------------------------------------------------------
 REQUIMENTS
 
-Funambol v6.5.12 -  think it will be work on all v6.5 ds-servers and higher
-Zimbra v5.0.x
+Funambol v8.0.1 -  think it will be work on all v8.0.1 ds-servers and higher
+Zimbra v5.0.x, v6.x, v7.x
  
 --------------------------------------------------------------------------------------
 BUILD
+
 Unzip the ZimbraConnector.zip in a folder, for example ZimbraConnector.
-Connector distribution include builded connector ZimbraConnector/ru.korusconsulting/output/ZimbraConnector.s4j
-If you want build connector from source then you should move to ZimbraConnector/ru.korusconsulting and exec ant
-$:cd ZimbraConnector/ru.korusconsulting
-$:ant
+Or get the code from svn, via: svn checkout https://zimbrafunambol.svn.sourceforge.net/svnroot/zimbrafunambol/trunk ZimbraConnector
+
+Connector distribution include builded connector ZimbraConnector/output/ZimbraConnector.s4j
+
+If you want build connector from source then you should move to ZimbraConnector and exec the following commands:
+  cd ZimbraConnector
+  ant clean
+  ant source
 
 --------------------------------------------------------------------------------------
 TEST
+
 If you want run tests then you must use user.properties file and settings.properties in the test folder of project.
 
 user.properties have to contain username and password properties, example:
@@ -38,6 +47,18 @@ No any special action required - Use funambol manual for install connector
 
 If you use ssl, then make sure that you set keystoke path:
 set JAVA_OPTS=%JAVA_OPTS% -Djavax.net.ssl.trustStore="%~dp0..\lib\security\cacerts"
+
+By installing you should put ZimbraConnector.xml in /opt/Funambol/config/connector with the correct configuration. With the following content (a reference to the database connection this module uses):
+-------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+	<java version="1.5.0" class="java.beans.XMLDecoder">
+		<object class="ru.korusconsulting.connector.config.ConnectorConfig">
+			<void property="dataSource">
+				<string>jdbc/fnblds</string>
+			</void>
+		</object>
+	</java>
+-------------------------------
 
 --------------------------------------------------------------------------------------
 SOME NOTES:
