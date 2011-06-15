@@ -14,6 +14,7 @@
 package ru.korusconsulting.connector.manager;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +33,7 @@ import com.funambol.framework.tools.merge.MergeResult;
 
 public class ContactManager extends Manager<Contact> {
 
-    private static final String A_CONTACT_ID = "id";
+    public static final String A_CONTACT_ID = "id";
 
     public void requestItemsForSync() throws IOException, SoapRequestException {
         itemsResponse = zimbraPort.requestAllContactIds();
@@ -45,7 +46,7 @@ public class ContactManager extends Manager<Contact> {
         String email = ContactUtils.getEmail(contact);
         String company = ContactUtils.getCompany(contact);
 
-        //I think for more perfomance We can use a hashtable with hashfunction as Last Name
+        //I think for more performance We can use a hashtable with hashfunction as Last Name
         for (Iterator iterator = itemsResponse.elementIterator(); iterator.hasNext();) {
             Element cn = (Element) iterator.next();
             String id = cn.attributeValue(A_CONTACT_ID);
@@ -68,14 +69,7 @@ public class ContactManager extends Manager<Contact> {
                 if (!StringUtils.isBlank(company)) {
                     twin = twin & company.equalsIgnoreCase(prop.getProperty(ContactUtils.COMPANY));
                 } else {
-                	if (StringUtils.isBlank(prop.getProperty(ContactUtils.FIRST_NAME)) 
-                			&& StringUtils.isBlank(prop.getProperty(ContactUtils.LAST_NAME)) 
-                			&& StringUtils.isBlank(prop.getProperty(ContactUtils.EMAIL))
-                			&& StringUtils.isBlank(prop.getProperty(ContactUtils.COMPANY))
-                	)
-                		twin = true;
-                	else
-                		twin = false;
+                	twin = false;
                     logger.warn("Contact hasn't any data for twins search");
                 }
             }
@@ -89,6 +83,9 @@ public class ContactManager extends Manager<Contact> {
     @Override
     public String addItem(Contact contact) throws IOException, SoapRequestException {
         Element createdContacts = zimbraPort.requestCreateContact(contact);
+        if (createdContacts == null)
+            return null;
+
         Element conEl = createdContacts.element(ZConst.E_CN);
         if (conEl == null)
             return null;
@@ -131,12 +128,12 @@ public class ContactManager extends Manager<Contact> {
             }
         }
         if (oldFolderId==null) {
-            // can't find contact with key 
+            // can't find contact with key
             // we have to create Contact
             key = addItem(contact);
             contact.setUid(key);
         } else {
-            
+
             zimbraPort.requestModifyContact(contact, oldFolderId, oldTags);
         }
         return key;

@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,6 +44,7 @@ import ru.korusconsulting.connector.exceptions.SoapRequestException;
 import ru.korusconsulting.connector.funambol.CalendarUtils;
 import ru.korusconsulting.connector.funambol.ContactUtils;
 import ru.korusconsulting.connector.funambol.NoteUtils;
+import ru.korusconsulting.connector.manager.ContactManager;
 import ru.korusconsulting.connector.manager.Manager;
 
 import com.funambol.common.pim.calendar.Calendar;
@@ -326,22 +328,22 @@ public class ZimbraPort {
         {
             Element attr = documentFactory.createElement(ZConst.A_ATTRIBUTE);
             {
-                attr.addAttribute(ZConst.A_NAME, "firstName");
+                attr.addAttribute(ZConst.A_NAME, ContactUtils.FIRST_NAME);
             }
             contactsRequest.add(attr);
             attr = documentFactory.createElement(ZConst.A_ATTRIBUTE);
             {
-                attr.addAttribute(ZConst.A_NAME, "lastName");
+                attr.addAttribute(ZConst.A_NAME, ContactUtils.LAST_NAME);
             }
             contactsRequest.add(attr);
             attr = documentFactory.createElement(ZConst.A_ATTRIBUTE);
             {
-                attr.addAttribute(ZConst.A_NAME, "email");
+                attr.addAttribute(ZConst.A_NAME, ContactUtils.EMAIL);
             }
             contactsRequest.add(attr);
             attr = documentFactory.createElement(ZConst.A_ATTRIBUTE);
             {
-                attr.addAttribute(ZConst.A_NAME, "company");
+                attr.addAttribute(ZConst.A_NAME, ContactUtils.COMPANY);
             }
             contactsRequest.add(attr);
             contactsRequest.addAttribute(ZConst.A_SYNC, "1");
@@ -352,6 +354,20 @@ public class ZimbraPort {
         Element contactsResponse = soapHelper.getBody(response)
                                              .element(ZConst.GET_CONTACTS_RESPONSE);
         ccontext.processContext(soapHelper.getContext(response));
+
+        for (Iterator iterator = contactsResponse.elementIterator(); iterator.hasNext();) {
+            Element cn = (Element) iterator.next();
+            Properties prop = ContactUtils.toProperties(cn);
+
+            if (StringUtils.isBlank(prop.getProperty(ContactUtils.FIRST_NAME))
+        			&& StringUtils.isBlank(prop.getProperty(ContactUtils.LAST_NAME))
+        			&& StringUtils.isBlank(prop.getProperty(ContactUtils.EMAIL))
+        			&& StringUtils.isBlank(prop.getProperty(ContactUtils.COMPANY))
+        	)
+            	iterator.remove();
+
+
+        }
 
         return contactsResponse;
     }
@@ -401,19 +417,19 @@ public class ZimbraPort {
         if (!init()) {
             return null;
         }
-        
+
         String firstName = ContactUtils.getFirstName(c);
         String lastName = ContactUtils.getLastName(c);
         String email = ContactUtils.getEmail(c);
         String company = ContactUtils.getCompany(c);
-        
-        if (	StringUtils.isBlank(firstName) 
-        		&& StringUtils.isBlank(lastName) 
-        		&& StringUtils.isBlank(email) 
+
+        if (	StringUtils.isBlank(firstName)
+        		&& StringUtils.isBlank(lastName)
+        		&& StringUtils.isBlank(email)
         		&& StringUtils.isBlank(company)) {
         	return null;
         }
-        
+
         Document request = createZimbraCall(ZConst.CREATE_CONTACT_REQUEST, ZConst.URN_ZIMBRA_MAIL);
         String folderName = c.getFolder();
         String folderId = null;
@@ -426,7 +442,7 @@ public class ZimbraPort {
                                                      documentFactory,
                                                      ZConst.URN_ZIMBRA_MAIL,
                                                      false);
-            
+
             if (contact.hasContent()) {
                 contactsRequest.add(contact);
                 if (folderId != null) {
