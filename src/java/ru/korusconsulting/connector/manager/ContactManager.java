@@ -49,9 +49,8 @@ public class ContactManager extends Manager<Contact> {
         //I think for more performance We can use a hashtable with hashfunction as Last Name
         for (Iterator iterator = itemsResponse.elementIterator(); iterator.hasNext();) {
             Element cn = (Element) iterator.next();
-            String id = cn.attributeValue(A_CONTACT_ID);
             Properties prop = ContactUtils.toProperties(cn);
-            //            if(prop.getProperty("firstName", "").equals(firstName))
+
             boolean twin = true;
             if (!(StringUtils.isBlank(firstName) && StringUtils.isBlank(lastName) && StringUtils.isBlank(email))) {
                 if (!StringUtils.isBlank(firstName)) {
@@ -74,6 +73,7 @@ public class ContactManager extends Manager<Contact> {
                 }
             }
             if (twin) {
+                String id = cn.attributeValue(A_CONTACT_ID);
                 twins.add(id);
             }
         }
@@ -85,7 +85,6 @@ public class ContactManager extends Manager<Contact> {
         Element createdContacts = zimbraPort.requestCreateContact(contact);
         if (createdContacts == null)
             return null;
-
         Element conEl = createdContacts.element(ZConst.E_CN);
         if (conEl == null)
             return null;

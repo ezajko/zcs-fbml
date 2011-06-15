@@ -194,7 +194,15 @@ public class ZimbraPort {
             if (!trashInclude && folderId.equals(getTrashFolderId())) {
                 continue;
             }
-            Contact contact = ContactUtils.asContact(cn);
+            Properties prop = ContactUtils.toProperties(cn);
+            if (StringUtils.isBlank(prop.getProperty(ContactUtils.FIRST_NAME))
+        			&& StringUtils.isBlank(prop.getProperty(ContactUtils.LAST_NAME))
+        			&& StringUtils.isBlank(prop.getProperty(ContactUtils.EMAIL))
+        			&& StringUtils.isBlank(prop.getProperty(ContactUtils.COMPANY))
+        	)
+            	continue;
+
+            Contact contact = ContactUtils.createContactFromProperties(prop);
 
             String contactId = cn.attributeValue(ZConst.A_ID);
             Element imageAttrib = (Element) cn.selectSingleNode("zimbraMail:a[@n='image']");
@@ -365,8 +373,6 @@ public class ZimbraPort {
         			&& StringUtils.isBlank(prop.getProperty(ContactUtils.COMPANY))
         	)
             	iterator.remove();
-
-
         }
 
         return contactsResponse;
