@@ -9,7 +9,7 @@ Synchronize funambol with zimbra. Connector can synchronize the follow items:
 Connector can't synchronize Notes (But Zimbra 7 also has none anymore)
 
 --------------------------------------------------------------------------------------
-REQUIMENTS
+REQUIREMENTS
 
 Funambol v8.0.1 -  think it will be work on all v8.0.1 ds-servers and higher
 Zimbra v5.0.x, v6.x, v7.x
@@ -17,10 +17,19 @@ Zimbra v5.0.x, v6.x, v7.x
 --------------------------------------------------------------------------------------
 BUILD
 
+Requirements to build:
+  - JDK
+  - Apache ANT
+  - Funambol library (which is delivered with the source in the dslib folder)
+
 Unzip the ZimbraConnector.zip in a folder, for example ZimbraConnector.
 Or get the code from svn, via: svn checkout https://zimbrafunambol.svn.sourceforge.net/svnroot/zimbrafunambol/trunk ZimbraConnector
 
 Connector distribution include builded connector ZimbraConnector/output/ZimbraConnector.s4j
+
+If you want to build this connector for an alternative version of Funambol, than it's originally build from,
+replace the funambol libs in the dslibs folder with the funambol libs from your version (see your Funambol installation for those jars).
+Be sure to remove the old version.
 
 If you want build connector from source then you should move to ZimbraConnector and exec the following commands:
   cd ZimbraConnector
