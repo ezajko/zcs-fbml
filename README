@@ -36,6 +36,9 @@ If you want build connector from source then you should move to ZimbraConnector 
   ant clean
   ant source
 
+Afte this you could check the INSTALLATION part in this README for the rest of the installation process.
+
+
 --------------------------------------------------------------------------------------
 TEST
 
@@ -68,6 +71,8 @@ By installing you should put ZimbraConnector.xml in /opt/Funambol/config/connect
 		</object>
 	</java>
 -------------------------------
+
+Here you also can find a manual to install this module: http://wiki.zimbra.com/index.php?title=Open_Source_Mobile_Calendar_and_Contact_Synchronization
 
 --------------------------------------------------------------------------------------
 SOME NOTES:
