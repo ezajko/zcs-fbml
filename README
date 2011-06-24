@@ -74,6 +74,13 @@ By installing you should put ZimbraConnector.xml in /opt/Funambol/config/connect
 
 Here you also can find a manual to install this module: http://wiki.zimbra.com/index.php?title=Open_Source_Mobile_Calendar_and_Contact_Synchronization
 
+
+For Blackberry, if it doesn't work you could check: (Source: https://core.forge.funambol.org/ds/viewMessage.do?dsForumId=405&dsMessageId=62002 )
+
+Server settings -> DataTransformerManager - Configure -> add an entry to Data transformations: scal / b64
+
+Do the same for scard and stask, now resetting the blackberry and everything seems to be loading fine.
+
 --------------------------------------------------------------------------------------
 SOME NOTES:
 
